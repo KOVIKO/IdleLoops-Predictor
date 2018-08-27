@@ -1,12 +1,13 @@
 // ==UserScript==
 // @name         IdleLoops Predictor
 // @namespace    https://github.com/Koviko/
-// @version      1.1.1
+// @version      1.1.2
 // @description  Predicts the amount of resources spent and gained by each action in the action list. Valid as of IdleLoops v.77.
 // @author       Koviko <koviko.net@gmail.com>
 // @website      http://koviko.net/
 // @match        http://stopsign.github.io/idleLoops/*
 // @grant        none
+// @run-at       document-idle
 // ==/UserScript==
 
 /** @namespace */
@@ -563,7 +564,7 @@ const Koviko = {
 
       // Log useful debugging data
       if (isDebug) {
-        console.log({
+        console.info({
           actions: actions,
           affected: affected,
           state: state,
@@ -668,22 +669,27 @@ const Koviko = {
         if (!this.tick(prediction, state)) break;
       }
     }
-  }
-}
+  },
 
-// Run the code!
-const runIdleLoopsPredictor = () => {
-  for (let varName in Koviko.globals) {
-    try {
-      Koviko.globals[varName] = eval(varName);
-    } catch (e) {
-      console.log(`Unable to retrieve global '${varName}'.`);
-      return;
+  hasRan: false,
+  run: () => {
+    if (!Koviko.hasRan) {
+      Koviko.hasRan = true;
+      for (let varName in Koviko.globals) {
+        try {
+          Koviko.globals[varName] = eval(varName);
+        } catch (e) {
+          console.error(`Unable to retrieve global '${varName}'.`);
+          Koviko.hasRan = false;
+          return;
+        }
+      }
+
+      window.Koviko = new Koviko.Predictor(Koviko.globals.view, Koviko.globals.actions, Koviko.globals.nextActionsDiv);
     }
   }
-
-  window.Koviko = new Koviko.Predictor(Koviko.globals.view, Koviko.globals.actions, Koviko.globals.nextActionsDiv);
 };
 
-window.addEventListener('load', runIdleLoopsPredictor);
-if (document.readyState == 'complete') runIdleLoopsPredictor();
+// Run the code!
+window.addEventListener('load', Koviko.run);
+setTimeout(() => document.readyState == 'complete' && Koviko.run(), 2000); // If it hasn't already ran in a couple of seconds, see if it can run
