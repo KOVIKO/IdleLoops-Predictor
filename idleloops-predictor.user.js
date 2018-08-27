@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         IdleLoops Predictor
 // @namespace    https://github.com/Koviko/
-// @version      1.1.0
+// @version      1.1.1
 // @description  Predicts the amount of resources spent and gained by each action in the action list. Valid as of IdleLoops v.77.
 // @author       Koviko <koviko.net@gmail.com>
 // @website      http://koviko.net/
@@ -438,7 +438,7 @@ const Koviko = {
           effect: { loop: r => r.soul++ }
         }},
         'Tournament': { affected: ['gold'], loop: {
-          max: a => 6 * a.segments,
+          max: () => 6,
           cost: (p) => segment => g.precision3(Math.pow(1.1, p.completed + segment)) * 5e6,
           tick: (p, a, s, r) => offset => {
             let selfCombat = g.getSkillLevel('Combat') * (1 + ((r.armor || 0) * g.getCraftGuildRank().bonus) / 5);
