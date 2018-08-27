@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         IdleLoops Predictor
 // @namespace    https://github.com/Koviko/
-// @version      1.0.1
+// @version      1.1.0
 // @description  Predicts the amount of resources spent and gained by each action in the action list. Valid as of IdleLoops v.77.
 // @author       Koviko <koviko.net@gmail.com>
 // @website      http://koviko.net/
@@ -377,7 +377,7 @@ const Koviko = {
         'Mason': {},
         'Architect': {},
 
-        // Loop actions that give rewards by segment
+        // Basic loops
         'Heal The Sick': { affected: ['rep'], loop: {
           cost: (p, a) => segment => g.fibonacci(2 + Math.floor((p.completed + segment) / a.segments + .0000001)) * 5000,
           tick: (p, a, s) => offset => g.getSkillLevel('Magic') * Math.sqrt(1 + p.total / 100) * (1 + g.getLevelFromExp(s[a.loopStats[(p.completed + offset) % a.loopStats.length]]) / 100),
@@ -405,19 +405,10 @@ const Koviko = {
             * Math.sqrt(1 + p.total / 1000),
           effect: { segment: r => r.gold += 10 }
         }},
-        'Tournament': { affected: ['gold'], loop: {
-          cost: (p) => segment => g.precision3(Math.pow(1.1, p.completed + segment)) * 5e6,
-          tick: (p, a, s, r) => offset => {
-            let selfCombat = g.getSkillLevel('Combat') * (1 + ((r.armor || 0) * g.getCraftGuildRank().bonus) / 5);
-            return (g.getSkillLevel('Magic') + selfCombat)
-              * (1 + g.getLevelFromExp(s[a.loopStats[(p.completed + offset) % a.loopStats.length]]) / 100)
-              * Math.sqrt(1 + p.total / 1000);
-          },
-          effect: { segment: r => (r.tourney = (r.tourney || 0) + 1, r.gold += 40 + Math.floor(r.tourney / 3 + .00001) * 20) }
-        }},
 
         // Dungeon-style loops
         'Small Dungeon': { affected: ['soul'], loop: {
+          max: a => g.dungeons[a.dungeonNum].length,
           cost: (p, a) => segment => g.precision3(Math.pow(2, Math.floor((p.completed + segment) / a.segments + .0000001)) * 15000),
           tick: (p, a, s) => offset => {
             let floor = Math.floor(p.completed / a.segments + .0000001);
@@ -431,6 +422,7 @@ const Koviko = {
           effect: { loop: r => r.soul++ },
         }},
         'Large Dungeon': { affected: ['soul'], loop: {
+          max: a => g.dungeons[a.dungeonNum].length,
           cost: (p, a) => segment => g.precision3(Math.pow(3, Math.floor((p.completed + segment) / a.segments + .0000001)) * 5e5),
           tick: (p, a, s, r) => offset => {
             let floor = Math.floor(p.completed / a.segments + .0000001);
@@ -444,6 +436,17 @@ const Koviko = {
               * Math.sqrt(1 + g.dungeons[a.dungeonNum][floor].completed / 200);
           },
           effect: { loop: r => r.soul++ }
+        }},
+        'Tournament': { affected: ['gold'], loop: {
+          max: a => 6 * a.segments,
+          cost: (p) => segment => g.precision3(Math.pow(1.1, p.completed + segment)) * 5e6,
+          tick: (p, a, s, r) => offset => {
+            let selfCombat = g.getSkillLevel('Combat') * (1 + ((r.armor || 0) * g.getCraftGuildRank().bonus) / 5);
+            return (g.getSkillLevel('Magic') + selfCombat)
+              * (1 + g.getLevelFromExp(s[a.loopStats[(p.completed + offset) % a.loopStats.length]]) / 100)
+              * Math.sqrt(1 + p.total / 1000);
+          },
+          effect: { segment: r => (r.tourney = (r.tourney || 0) + 1, r.gold += 40 + Math.floor(r.tourney / 3 + .00001) * 20) }
         }},
       };
 
@@ -573,6 +576,7 @@ const Koviko = {
      * Perform one tick of a prediction
      * @param {Prediction} prediction Prediction object
      * @param {Predictor~State} state State object
+     * @return {boolean} Whether another tick can occur
      * @memberof Koviko.Predictor
      */
     tick(prediction, state) {
@@ -592,6 +596,9 @@ const Koviko = {
 
         /** @var {number} */
         const totalSegments = prediction.action.segments;
+
+        /** @var {number} */
+        const maxSegments = prediction.loop.max ? prediction.loop.max(prediction.action) * totalSegments : Infinity;
 
         /**
          * Current segment within the loop
@@ -619,7 +626,7 @@ const Koviko = {
         progression.progress += additionalProgress;
 
         // Calculate the progress and current segment after the tick
-        for (; progress >= loopCost(segment); progress -= loopCost(segment++)) {
+        for (; progress >= loopCost(segment) && segment < maxSegments; progress -= loopCost(segment++)) {
           // Handle the completion of a loop
           if (segment >= totalSegments - 1) {
             progression.progress = 0;
@@ -638,7 +645,11 @@ const Koviko = {
             prediction.loop.effect.segment(state.resources);
           }
         }
+
+        return additionalProgress && segment < maxSegments;
       }
+
+      return true;
     }
 
     /**
@@ -653,14 +664,15 @@ const Koviko = {
 
       // Perform all ticks in succession
       for (let ticks = 0; ticks < prediction.ticks(); ticks++) {
-        this.tick(prediction, state);
         state.resources.mana--;
+        if (!this.tick(prediction, state)) break;
       }
     }
   }
 }
 
-window.addEventListener('load', () => {
+// Run the code!
+const runIdleLoopsPredictor = () => {
   for (let varName in Koviko.globals) {
     try {
       Koviko.globals[varName] = eval(varName);
@@ -671,4 +683,7 @@ window.addEventListener('load', () => {
   }
 
   window.Koviko = new Koviko.Predictor(Koviko.globals.view, Koviko.globals.actions, Koviko.globals.nextActionsDiv);
-});
+};
+
+window.addEventListener('load', runIdleLoopsPredictor);
+if (document.readyState == 'complete') runIdleLoopsPredictor();

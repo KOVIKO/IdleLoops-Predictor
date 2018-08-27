@@ -38,7 +38,13 @@ The script keeps track of anything that can affect resources, both those that ar
 
 ## Limitations
 
-When an action in your action list will cause a permanent attribute of your character to increase in level in the middle of a loop, this will not be accounted for. This includes things such as Combat skill, Magic skill, or Hermit Knowledge which can all affect subsequent actions in the action list. Instead, you'll simply see the update in the next loop.
+### Skills
+
+When an action in your action list will cause a permanent attribute of your character to increase in level in the middle of a loop, this will not be accounted for. This includes things such as Combat skill, Magic skill, or Hermit Knowledge which can all affect subsequent actions in the action list. Instead, you'll simply see the update in the next loop. This is something that I plan to change in the future.
+
+### Performance
+
+If you notice lag whenever you make changes to the action list, I recommend taking the code from this userscript and pasting it directly into the console. Personally, I've found that Tampermonkey causes some performance issues. This is something that I hope to address in the future.
 
 ## License
 
