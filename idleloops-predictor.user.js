@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         IdleLoops Predictor
 // @namespace    https://github.com/Koviko/
-// @version      1.2.0
+// @version      1.2.1
 // @description  Predicts the amount of resources spent and gained by each action in the action list. Valid as of IdleLoops v.77.
 // @author       Koviko <koviko.net@gmail.com>
 // @website      http://koviko.net/
@@ -498,7 +498,7 @@ const Koviko = {
           },
           effect: { segment: (r, k) => {
             r.tourney = (r.tourney || 0) + 1;
-            let floor = Math.floor(r.tourney / 3 + .00001);
+            let floor = Math.floor((r.tourney - 1) / 3 + .00001);
             r.gold += 40 + floor * 20;
             k.combat += 100 + floor * 50;
           }}
