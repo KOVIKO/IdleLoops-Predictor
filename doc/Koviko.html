@@ -294,6 +294,29 @@
 
         <tr>
             
+                <td class="name"><code>skills</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object.&lt;string, <a href="Koviko.html#~Skill">Koviko~Skill</a>></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Skill objects</td>
+        </tr>
+
+    
+
+        <tr>
+            
                 <td class="name"><code>towns</code></td>
             
 
@@ -409,29 +432,6 @@
 
         <tr>
             
-                <td class="name"><code>getSkillLevel</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">function</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">Get the current level of a skill</td>
-        </tr>
-
-    
-
-        <tr>
-            
                 <td class="name"><code>getLevelFromExp</code></td>
             
 
@@ -448,7 +448,30 @@
 
             
 
-            <td class="description last">Converts an amount of experience into a level</td>
+            <td class="description last">Converts an amount of stat experience into a level</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>getSkillLevelFromExp</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Converts an amount of skill experience into a level</td>
         </tr>
 
     
@@ -472,52 +495,6 @@
             
 
             <td class="description last">Determine the current amount of bonus XP from talents and soulstones</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>getCraftGuildRank</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">function</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">Calculate the craft guild rank and get an object with the rank name and experience bonus value</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>getAdvGuildRank</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">function</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">Calculate the adventure guild rank and get an object with the rank name and experience bonus value</td>
         </tr>
 
     
@@ -625,7 +602,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="idleloops-predictor.user.js.html">idleloops-predictor.user.js</a>, <a href="idleloops-predictor.user.js.html#line75">line 75</a>
+        <a href="idleloops-predictor.user.js.html">idleloops-predictor.user.js</a>, <a href="idleloops-predictor.user.js.html#line80">line 80</a>
     </li></ul></dd>
     
 
@@ -1315,6 +1292,130 @@
 
             
                 
+<h4 class="name" id="~Skill">Skill</h4>
+
+
+
+
+<div class="description">
+    IdleLoops skill
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">Object</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>exp</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Experience</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="idleloops-predictor.user.js.html">idleloops-predictor.user.js</a>, <a href="idleloops-predictor.user.js.html#line54">line 54</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+            
+                
 <h4 class="name" id="~Town">Town</h4>
 
 
@@ -1523,13 +1624,13 @@
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Koviko.Prediction.html">Prediction</a></li><li><a href="Koviko.Predictor.html">Predictor</a></li></ul><h3>Namespaces</h3><ul><li><a href="Koviko.html">Koviko</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Koviko.Prediction.html">Prediction</a></li><li><a href="Koviko.Predictor.html">Predictor</a></li></ul><h3>Namespaces</h3><ul><li><a href="Koviko.html">Koviko</a></li><li><a href="Koviko.Predictor_helpers.html">helpers</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Mon Aug 27 2018 16:36:45 GMT-0400 (Eastern Daylight Time)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Thu Aug 30 2018 03:25:53 GMT-0400 (Eastern Daylight Time)
 </footer>
 
 <script> prettyPrint(); </script>

@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         IdleLoops Predictor
 // @namespace    https://github.com/Koviko/
-// @version      1.1.2
+// @version      1.2.0
 // @description  Predicts the amount of resources spent and gained by each action in the action list. Valid as of IdleLoops v.77.
 // @author       Koviko <koviko.net@gmail.com>
 // @website      http://koviko.net/
@@ -52,22 +52,27 @@ const Koviko = {
    */
 
   /**
+   * IdleLoops skill
+   * @typedef {Object} Koviko~Skill
+   * @prop {number} exp Experience
+   */
+
+  /**
    * Globals
    * @prop {Koviko~View} view IdleLoops view object
    * @prop {Object} actions IdleLoops actions object
    * @prop {Array.<Koviko~ListedAction>} actions.next Action List
    * @prop {HTMLElement} nextActionsDiv Action list container
    * @prop {Array.<string>} statList Names of all stats
+   * @prop {Object.<string, Koviko~Skill>} skills Skill objects
    * @prop {Array.<Koviko~Town>} towns Town objects
    * @prop {Array.<Array.<Koviko~DungeonFloor>>} dungeons Dungeon objects
    * @prop {function} fibonacci Calculates the value of the given index of the Fibonacci sequence
    * @prop {function} precision3 Rounds numbers to a precision of 3
    * @prop {function} translateClassNames Converts an action name to a {@link Koviko~Action} object
-   * @prop {function} getSkillLevel Get the current level of a skill
-   * @prop {function} getLevelFromExp Converts an amount of experience into a level
+   * @prop {function} getLevelFromExp Converts an amount of stat experience into a level
+   * @prop {function} getSkillLevelFromExp Converts an amount of skill experience into a level
    * @prop {function} getTotalBonusXP Determine the current amount of bonus XP from talents and soulstones
-   * @prop {function} getCraftGuildRank Calculate the craft guild rank and get an object with the rank name and experience bonus value
-   * @prop {function} getAdvGuildRank Calculate the adventure guild rank and get an object with the rank name and experience bonus value
    * @prop {function} goldCostLocks Determine the amount of gold gained from lockpicking
    * @prop {function} goldCostSQuests Determine the amount of gold gained from short quests
    * @prop {function} goldCostLQuests Determine the amount of gold gained from long quests
@@ -77,16 +82,15 @@ const Koviko = {
     actions: null,
     nextActionsDiv: null,
     statList: null,
+    skills: null,
     towns: null,
     dungeons: null,
     fibonacci: null,
     precision3: null,
     translateClassNames: null,
-    getSkillLevel: null,
     getLevelFromExp: null,
+    getSkillLevelFromExp: null,
     getTotalBonusXP: null,
-    getCraftGuildRank: null,
-    getAdvGuildRank: null,
     goldCostLocks: null,
     goldCostSQuests: null,
     goldCostLQuests: null,
@@ -201,6 +205,11 @@ const Koviko = {
      */
 
     /**
+     * Accumulated skill experience
+     * @typedef {Object.<string, number>} Koviko.Predictor~Skills
+     */
+
+    /**
      * Accumulated resources
      * @typedef {Object.<string, number>} Koviko.Predictor~Resources
      */
@@ -214,6 +223,7 @@ const Koviko = {
      * State object
      * @typedef {Object} Koviko.Predictor~State
      * @prop {Koviko.Predictor~Stats} stats Accumulated stat experience
+     * @prop {Koviko.Predictor~Skills} skills Accumulated skill experience
      * @prop {Koviko.Predictor~Resources} resources Accumulated resources
      * @prop {Koviko.Predictor~Progress} progress Accumulated progress
      */
@@ -281,6 +291,8 @@ const Koviko = {
       ul.koviko .herbs{color:#4caf50}
       ul.koviko .hide{color:#663300}
       ul.koviko .potions{color:#00b2ee}
+      ul.koviko .crafts{color:#777777}
+      ul.koviko .adventures{color:#191919}
       `;
 
       // Create the <style> element if it doesn't already exist
@@ -323,10 +335,51 @@ const Koviko = {
      * @memberof Koviko.Predictor
      */
     initPredictions() {
+      /**
+       * Helper methods
+       * @member {Object.<string, function>}
+       * @namespace
+       */
+      this.helpers = (this.helpers || {
+        /**
+         * Get the level of a town attribute.
+         * @param {number} exp Amount of experience in the town attribute
+         * @return {number} Current level of town attribute
+         * @memberof Koviko.Predictor#helpers
+         */
+        getTownLevelFromExp: exp => Math.floor((Math.sqrt(8 * exp / 100 + 1) - 1) / 2),
+
+        /**
+         * Get the current guild rank's bonus, noting that there is a max of 15 ranks, base zero.
+         * @param {Koviko.Predictor~Resources} r Accumulated resources
+         * @return {number} Current bonus from guild rank
+         * @memberof Koviko.Predictor#helpers
+         */
+        getGuildRankBonus: (guild) => Math.floor(guild / 3 + .00001) >= 14 ? Math.floor(10 + (45 ** 2) / 30) : g.precision3(1 + guild / 20 + (guild ** 2) / 300),
+
+        /**
+         * Calculate the combat skill specifically affecting the team leader
+         * @param {Koviko.Predictor~Resources} r Accumulated resources
+         * @param {Koviko.Predictor~Skills} k Accumulated skills
+         * @return {number} Combat skill of the team leader
+         * @memberof Koviko.Predictor#helpers
+         */
+        getSelfCombat: (r, k) => g.getSkillLevelFromExp(k.combat) * (1 + ((r.armor || 0) * h.getGuildRankBonus(r.crafts || 0)) / 5),
+
+        /**
+         * Calculate the combat skill of the entire team
+         * @param {Koviko.Predictor~Resources} r Accumulated resources
+         * @param {Koviko.Predictor~Skills} k Accumulated skills
+         * @return {number} Combat skill of the team members
+         * @memberof Koviko.Predictor#helpers
+         */
+        getTeamCombat: (r, k) => getSelfCombat(r, k) + g.getSkillLevelFromExp(k.combat) * (r.team || 0) / 2 * h.getGuildRankBonus(r.adventures || 0),
+      });
+
       // Alias the globals to a shorter variable name
       const g = Koviko.globals;
+      const h = this.helpers;
 
-      // Organize predictions to be passed to Prediction class
       /**
        * Prediction parameters
        * @type {Object.<string, Koviko.Prediction~Parameters>}
@@ -344,8 +397,8 @@ const Koviko = {
         'Investigate': {},
         'Long Quest': { affected: ['gold', 'rep'], effect: r => (r.gold += g.goldCostLQuests(), r.rep += 1) },
         'Throw Party': { affected: ['rep'], effect: r => r.rep -= 2 },
-        'Warrior Lessons': {},
-        'Mage Lessons': {},
+        'Warrior Lessons': { effect: (r, k) => k.combat += 100 },
+        'Mage Lessons': { effect: (r, k) => k.magic += 100 * (1 + g.getSkillLevelFromExp(k.alchemy) / 100) },
         'Buy Supplies': { affected: ['gold'], effect: r => (r.gold -= 300 - Math.max((r.supplyDiscount || 0) * 20, 0), r.supplies = (r.supplies || 0) + 1) },
         'Haggle': { effect: r => (r.rep--, r.supplyDiscount = (r.supplyDiscount || 0) + 1) },
         'Start Journey': { effect: r => r.supplies = (r.supplies || 0) - 1 },
@@ -358,9 +411,9 @@ const Koviko = {
         'Sit By Waterfall': {},
         'Old Shortcut': {},
         'Talk To Hermit': {},
-        'Practical Magic': {},
-        'Learn Alchemy': { affected: ['herbs'], effect: r => r.herbs -= 10 },
-        'Brew Potions': { affected: ['herbs', 'potions'], effect: r => (r.herbs -= 10, r.potions++) },
+        'Practical Magic': { effect: (r, k) => k.practical += 100 },
+        'Learn Alchemy': { affected: ['herbs'], effect: (r, k) => (r.herbs -= 10, k.alchemy += 50, k.magic += 50) },
+        'Brew Potions': { affected: ['herbs', 'potions'], effect: (r, k) => (r.herbs -= 10, r.potions++, k.alchemy += 25, k.magic += 50) },
         'Train Dex': {},
         'Train Speed': {},
         'Continue On': {},
@@ -370,84 +423,85 @@ const Koviko = {
         'Gamble': { affected: ['gold', 'rep'], effect: r => (r.rep--, r.gold += 60 - 20) },
         'Get Drunk': { affected: ['rep'], effect: r => r.rep-- },
         'Purchase Mana': { affected: ['mana', 'gold'], effect: r => (r.mana += r.gold * 50, r.gold = 0) },
-        'Sell Potions': { affected: ['gold', 'potions'], effect: r => (r.gold += r.potions * g.getSkillLevel('Alchemy'), r.potions--) },
+        'Sell Potions': { affected: ['gold', 'potions'], effect: (r, k) => (r.gold += r.potions * g.getSkillLevelFromExp(k.alchemy), r.potions--) },
         'Read Books': {},
         'Gather Team': { affected: ['gold'], effect: r => (r.gold -= (r.team || 0) * 200, r.team = (r.team || 0) + 1) },
         'Craft Armor': { affected: ['hide'], effect: r => (r.hide -= 2, r.armor = (r.armor || 0) + 1) },
-        'Apprentice': {},
-        'Mason': {},
-        'Architect': {},
+        'Apprentice': { effect: (r, k) => (r.apprentice = (r.apprentice || 0) + 30 * h.getGuildRankBonus(r.crafts || 0), k.crafting += 10 * (1 + h.getTownLevelFromExp(r.apprentice) / 100)) },
+        'Mason': { effect: (r, k) => (r.mason = (r.mason || 0) + 20 * h.getGuildRankBonus(r.crafts || 0), k.crafting += 20 * (1 + h.getTownLevelFromExp(r.mason) / 100)) },
+        'Architect': { effect: (r, k) => (r.architect = (r.architect || 0) + 10 * h.getGuildRankBonus(r.crafts || 0), k.crafting += 40 * (1 + h.getTownLevelFromExp(r.architect) / 100)) },
 
         // Basic loops
-        'Heal The Sick': { affected: ['rep'], loop: {
+        'Heal The Sick': { affected: ['rep'], effect: (r, k) => k.magic += 10, loop: {
           cost: (p, a) => segment => g.fibonacci(2 + Math.floor((p.completed + segment) / a.segments + .0000001)) * 5000,
-          tick: (p, a, s) => offset => g.getSkillLevel('Magic') * Math.sqrt(1 + p.total / 100) * (1 + g.getLevelFromExp(s[a.loopStats[(p.completed + offset) % a.loopStats.length]]) / 100),
+          tick: (p, a, s, k) => offset => g.getSkillLevelFromExp(k.magic) * Math.sqrt(1 + p.total / 100) * (1 + g.getLevelFromExp(s[a.loopStats[(p.completed + offset) % a.loopStats.length]]) / 100),
           effect: { loop: r => r.rep += 3 },
         }},
-        'Fight Monsters': { affected: ['gold'], loop: {
+        'Fight Monsters': { affected: ['gold'], effect: (r, k) => k.combat += 10, loop: {
           cost: (p, a) => segment => g.fibonacci(Math.floor((p.completed + segment) - p.completed / a.segments + .0000001)) * 10000,
-          tick: (p, a, s) => offset => g.getSkillLevel('Combat') * Math.sqrt(1 + p.total / 100) * (1 + g.getLevelFromExp(s[a.loopStats[(p.completed + offset) % a.loopStats.length]]) / 100),
+          tick: (p, a, s, k) => offset => g.getSkillLevelFromExp(k.combat) * Math.sqrt(1 + p.total / 100) * (1 + g.getLevelFromExp(s[a.loopStats[(p.completed + offset) % a.loopStats.length]]) / 100),
           effect: { segment: r => r.gold += 20 },
         }},
-        'Adventure Guild': { affected: ['gold'], loop: {
+        'Adventure Guild': { affected: ['gold', 'adventures'], loop: {
           cost: (p) => segment => g.precision3(Math.pow(1.2, p.completed + segment)) * 5e6,
-          tick: (p, a, s, r) => offset => {
-            let selfCombat = g.getSkillLevel('Combat') * (1 + ((r.armor || 0) * g.getCraftGuildRank().bonus) / 5);
-            return (g.getSkillLevel('Magic') / 2 + selfCombat)
+          tick: (p, a, s, k, r) => offset => {
+            return (h.getSelfCombat(r, k) + g.getSkillLevelFromExp(k.magic) / 2)
               * (1 + g.getLevelFromExp(s[a.loopStats[(p.completed + offset) % a.loopStats.length]]) / 100)
               * Math.sqrt(1 + p.total / 1000);
           },
-          effect: { segment: r => r.mana += 200 }
+          effect: { segment: r => (r.mana += 200, r.adventures++) }
         }},
-        'Crafting Guild': { affected: ['gold'], loop: {
+        'Crafting Guild': { affected: ['gold', 'crafts'], loop: {
           cost: (p) => segment => g.precision3(Math.pow(1.2, p.completed + segment)) * 2e6,
-          tick: (p, a, s) => offset => (g.getSkillLevel('Magic') / 2 + g.getSkillLevel('Crafting'))
+          tick: (p, a, s, k) => offset => (g.getSkillLevelFromExp(k.magic) / 2 + g.getSkillLevelFromExp(k.crafting))
             * (1 + g.getLevelFromExp(s[a.loopStats[(p.completed + offset) % a.loopStats.length]]) / 100)
             * Math.sqrt(1 + p.total / 1000),
-          effect: { segment: r => r.gold += 10 }
+          effect: { segment: (r, k) => (r.gold += 10, r.crafts++, k.crafting += 50) }
         }},
 
         // Dungeon-style loops
-        'Small Dungeon': { affected: ['soul'], loop: {
+        'Small Dungeon': { affected: ['soul'], effect: (r, k) => (k.combat += 5, k.magic += 5), loop: {
           max: a => g.dungeons[a.dungeonNum].length,
           cost: (p, a) => segment => g.precision3(Math.pow(2, Math.floor((p.completed + segment) / a.segments + .0000001)) * 15000),
-          tick: (p, a, s) => offset => {
+          tick: (p, a, s, k) => offset => {
             let floor = Math.floor(p.completed / a.segments + .0000001);
 
-            if (!(floor in g.dungeons[a.dungeonNum])) return 0;
-
-            return (g.getSkillLevel('Combat') + g.getSkillLevel('Magic'))
-              * (1 + g.getLevelFromExp(s[a.loopStats[(p.completed + offset) % a.loopStats.length]]) / 100)
-              * Math.sqrt(1 + g.dungeons[a.dungeonNum][floor].completed / 200);
+            return floor in g.dungeons[a.dungeonNum]
+              ? (g.getSkillLevelFromExp(k.combat) + g.getSkillLevelFromExp(k.magic))
+                * (1 + g.getLevelFromExp(s[a.loopStats[(p.completed + offset) % a.loopStats.length]]) / 100)
+                * Math.sqrt(1 + g.dungeons[a.dungeonNum][floor].completed / 200)
+              : 0;
           },
           effect: { loop: r => r.soul++ },
         }},
-        'Large Dungeon': { affected: ['soul'], loop: {
+        'Large Dungeon': { affected: ['soul'], effect: (r, k) => (k.combat += 15, k.magic += 15), loop: {
           max: a => g.dungeons[a.dungeonNum].length,
           cost: (p, a) => segment => g.precision3(Math.pow(3, Math.floor((p.completed + segment) / a.segments + .0000001)) * 5e5),
-          tick: (p, a, s, r) => offset => {
+          tick: (p, a, s, k, r) => offset => {
             let floor = Math.floor(p.completed / a.segments + .0000001);
-            let selfCombat = g.getSkillLevel('Combat') * (1 + ((r.armor || 0) * g.getCraftGuildRank().bonus) / 5);
-            let teamCombat = selfCombat + g.getSkillLevel('Combat') * (r.team || 0) / 2 * g.getAdvGuildRank().bonus;
 
-            if (!(floor in g.dungeons[a.dungeonNum])) return 0;
-
-            return (teamCombat + g.getSkillLevel('Magic'))
-              * (1 + g.getLevelFromExp(s[a.loopStats[(p.completed + offset) % a.loopStats.length]]) / 100)
-              * Math.sqrt(1 + g.dungeons[a.dungeonNum][floor].completed / 200);
+            return floor in g.dungeons[a.dungeonNum]
+              ? (h.getTeamCombat(r, k) + g.getSkillLevelFromExp(k.magic))
+                * (1 + g.getLevelFromExp(s[a.loopStats[(p.completed + offset) % a.loopStats.length]]) / 100)
+                * Math.sqrt(1 + g.dungeons[a.dungeonNum][floor].completed / 200)
+              : 0;
           },
           effect: { loop: r => r.soul++ }
         }},
         'Tournament': { affected: ['gold'], loop: {
           max: () => 6,
           cost: (p) => segment => g.precision3(Math.pow(1.1, p.completed + segment)) * 5e6,
-          tick: (p, a, s, r) => offset => {
-            let selfCombat = g.getSkillLevel('Combat') * (1 + ((r.armor || 0) * g.getCraftGuildRank().bonus) / 5);
-            return (g.getSkillLevel('Magic') + selfCombat)
+          tick: (p, a, s, k, r) => offset => {
+            return (h.getSelfCombat(r, k) + g.getSkillLevelFromExp(k.magic))
               * (1 + g.getLevelFromExp(s[a.loopStats[(p.completed + offset) % a.loopStats.length]]) / 100)
               * Math.sqrt(1 + p.total / 1000);
           },
-          effect: { segment: r => (r.tourney = (r.tourney || 0) + 1, r.gold += 40 + Math.floor(r.tourney / 3 + .00001) * 20) }
+          effect: { segment: (r, k) => {
+            let floor = Math.floor(r.tourney / 3 + .00001);
+            r.tourney = (r.tourney || 0) + 1;
+            r.gold += 40 + floor * 20;
+            k.combat += 100 + floor * 50;
+          }}
         }},
       };
 
@@ -478,6 +532,7 @@ const Koviko = {
       const state = {
         resources: { mana: 250 },
         stats: Koviko.globals.statList.reduce((stats, name) => (stats[name] = 0, stats), {}),
+        skills: Object.entries(Koviko.globals.skills).reduce((skills, x) => (skills[x[0].toLowerCase()] = x[1].exp, skills), {}),
         progress: {}
       };
 
@@ -550,7 +605,7 @@ const Koviko = {
 
             // Run the effect, now that the mana checks are complete
             if (prediction.effect) {
-              prediction.effect(state.resources);
+              prediction.effect(state.resources, state.skills);
             }
           }
 
@@ -593,7 +648,7 @@ const Koviko = {
         const loopCost = prediction.loop.cost(progression, prediction.action);
 
         /** @var {function} */
-        const tickProgress = prediction.loop.tick(progression, prediction.action, state.stats, state.resources);
+        const tickProgress = prediction.loop.tick(progression, prediction.action, state.stats, state.skills, state.resources);
 
         /** @var {number} */
         const totalSegments = prediction.action.segments;
@@ -637,13 +692,13 @@ const Koviko = {
 
             // Apply the effect from the completion of a loop
             if (prediction.loop.effect.loop) {
-              prediction.loop.effect.loop(state.resources);
+              prediction.loop.effect.loop(state.resources, state.skills);
             }
           }
 
           // Apply the effect from the completion of a segment
           if (prediction.loop.effect.segment) {
-            prediction.loop.effect.segment(state.resources);
+            prediction.loop.effect.segment(state.resources, state.skills);
           }
         }
 
