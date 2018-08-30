@@ -423,7 +423,7 @@ const Koviko = {
         'Gamble': { affected: ['gold', 'rep'], effect: r => (r.rep--, r.gold += 60 - 20) },
         'Get Drunk': { affected: ['rep'], effect: r => r.rep-- },
         'Purchase Mana': { affected: ['mana', 'gold'], effect: r => (r.mana += r.gold * 50, r.gold = 0) },
-        'Sell Potions': { affected: ['gold', 'potions'], effect: (r, k) => (r.gold += r.potions * g.getSkillLevelFromExp(k.alchemy), r.potions--) },
+        'Sell Potions': { affected: ['gold', 'potions'], effect: (r, k) => (r.gold += r.potions * g.getSkillLevelFromExp(k.alchemy), r.potions -= r.potions) },
         'Read Books': {},
         'Gather Team': { affected: ['gold'], effect: r => (r.team = (r.team || 0) + 1, r.gold -= r.team * 200) },
         'Craft Armor': { affected: ['hide'], effect: r => (r.hide -= 2, r.armor = (r.armor || 0) + 1) },
