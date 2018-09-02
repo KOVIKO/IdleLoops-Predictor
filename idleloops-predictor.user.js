@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         IdleLoops Predictor
 // @namespace    https://github.com/Koviko/
-// @version      1.2.1
+// @version      1.2.2
 // @description  Predicts the amount of resources spent and gained by each action in the action list. Valid as of IdleLoops v.77.
 // @author       Koviko <koviko.net@gmail.com>
 // @website      http://koviko.net/
@@ -162,7 +162,7 @@ const Koviko = {
     /**
      * Calculate the number of ticks needed to complete the action.
      * @param {Koviko.Prediction~Action} a Action object
-     * @param {Predictor~Stats} s Accumulated stat experience
+     * @param {Koviko.Predictor~Stats} s Accumulated stat experience
      * @memberof Koviko.Prediction
      */
     updateTicks(a, s) {
@@ -181,7 +181,7 @@ const Koviko = {
     /**
      * Add the experience gained in one tick to the accumulated stat experience.
      * @param {Koviko.Prediction~Action} a Action object
-     * @param {Predictor~Stats} s Accumulated stat experience
+     * @param {Koviko.Predictor~Stats} s Accumulated stat experience
      * @memberof Koviko.Prediction
      */
     exp(a, s) {
@@ -423,7 +423,7 @@ const Koviko = {
         'Gamble': { affected: ['gold', 'rep'], effect: r => (r.rep--, r.gold += 60 - 20) },
         'Get Drunk': { affected: ['rep'], effect: r => r.rep-- },
         'Purchase Mana': { affected: ['mana', 'gold'], effect: r => (r.mana += r.gold * 50, r.gold = 0) },
-        'Sell Potions': { affected: ['gold', 'potions'], effect: (r, k) => (r.gold += r.potions * g.getSkillLevelFromExp(k.alchemy), r.potions--) },
+        'Sell Potions': { affected: ['gold', 'potions'], effect: (r, k) => (r.gold += r.potions * g.getSkillLevelFromExp(k.alchemy), r.potions = 0) },
         'Read Books': {},
         'Gather Team': { affected: ['gold'], effect: r => (r.team = (r.team || 0) + 1, r.gold -= r.team * 200) },
         'Craft Armor': { affected: ['hide'], effect: r => (r.hide -= 2, r.armor = (r.armor || 0) + 1) },
@@ -527,7 +527,7 @@ const Koviko = {
     update(actions, container, isDebug) {
       /**
        * Organize accumulated resources, accumulated stats, and accumulated progress into a single object
-       * @var {Predictor~State}
+       * @var {Koviko.Predictor~State}
        */
       const state = {
         resources: { mana: 250 },
@@ -550,7 +550,7 @@ const Koviko = {
 
       /**
        * Template function to create the display on a given action in the action list
-       * @param {Predictor~Resources} resources Accumulated resources
+       * @param {Koviko.Predictor~Resources} resources Accumulated resources
        * @param {boolean} isValid Whether the amount of mana remaining is valid for this action
        */
       const template = (resources, isValid) => (isValid = 'koviko' + (isValid ? '' : ' invalid'), `<ul class="${isValid}">` + affected.map(name => `<li class=${name}>${resources[name]}</li>`).join('') + '</ul>');
@@ -563,7 +563,7 @@ const Koviko = {
 
       // Run through the action list and update the view for each action
       actions.forEach((listedAction, i) => {
-        /** @var {Prediction} */
+        /** @var {Koviko.Prediction} */
         let prediction = this.predictions[listedAction.name];
 
         if (prediction) {
@@ -581,7 +581,7 @@ const Koviko = {
 
           // Make sure that the loop is properly represented in `state.progress`
           if (prediction.loop && !(prediction.name in state.progress)) {
-            /** @var {Predictor~Progression} */
+            /** @var {Koviko.Predictor~Progression} */
             state.progress[prediction.name] = {
               progress: 0,
               completed: 0,
@@ -630,8 +630,8 @@ const Koviko = {
 
     /**
      * Perform one tick of a prediction
-     * @param {Prediction} prediction Prediction object
-     * @param {Predictor~State} state State object
+     * @param {Koviko.Prediction} prediction Prediction object
+     * @param {Koviko.Predictor~State} state State object
      * @return {boolean} Whether another tick can occur
      * @memberof Koviko.Predictor
      */
@@ -641,7 +641,7 @@ const Koviko = {
 
       // Handle the loop if it exists
       if (prediction.loop) {
-        /** @var {Predictor~Progression} */
+        /** @var {Koviko.Predictor~Progression} */
         const progression = state.progress[prediction.name];
 
         /** @var {function} */
@@ -710,8 +710,8 @@ const Koviko = {
 
     /**
      * Perform all ticks of a prediction
-     * @param {Prediction} prediction Prediction object
-     * @param {Predictor~state} state State object
+     * @param {Koviko.Prediction} prediction Prediction object
+     * @param {Koviko.Predictor~state} state State object
      * @memberof Koviko.Predictor
      */
     predict(prediction, state) {
