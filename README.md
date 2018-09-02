@@ -32,6 +32,10 @@ The UI additions of the addon are all contained in the Action List.
   
 The predictor does not attempt to predict the actual amount of soulstones you will receive, but rather the amount of chances you have at receiving soulstones.
 
+![IdleLoops Predictor Tooltip](https://i.imgur.com/RnuFxmy.png)
+
+* **Tooltips**: When you hover your cursor over an action in the action list, it will show the predicted level of stats and skills the IdleLoops Predictor expects you to have at the end of the action. This will display to the left of the action in a tooltip.
+
 ## How it works
 
 This script is actually a simplified, barebones rebuild of the game loop, operating on an instanced set of progression attributes. Whenever the predictions are calculated, each individual tick is calculated in sequence. This calculation occurs every time that the game attempts to update the action list, which is most frequently while the user is setting up the action list.
@@ -43,6 +47,10 @@ The script keeps track of anything that can affect resources, both those that ar
 ### Skills
 
 The results that you see in the IdleLoops Predictor UI are predicted based on your current skills at the moment in which the UI was last updated. This means that if you are gaining skills in the middle of a loop, updating the action list will make a prediction as though you were about to press the Restart button at that specific moment.
+
+## Tooltips
+
+Currently, the only way to display tooltips without ruining scrolling of the action list is to overlap the left-side current action list. Due to this requirement, sometimes the left-side current action list will not be interactable immediately after displaying tooltips from the Action List. As a workaround, either bring your mouse entirely past the top or past the bottom of the Action List and then you should be able to interact with the left-side current action list again.
 
 ### Performance
 

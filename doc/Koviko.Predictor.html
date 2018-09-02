@@ -94,7 +94,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="idleloops-predictor.user.js.html">idleloops-predictor.user.js</a>, <a href="idleloops-predictor.user.js.html#line193">line 193</a>
+        <a href="idleloops-predictor.user.js.html">idleloops-predictor.user.js</a>, <a href="idleloops-predictor.user.js.html#line275">line 275</a>
     </li></ul></dd>
     
 
@@ -203,7 +203,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="idleloops-predictor.user.js.html">idleloops-predictor.user.js</a>, <a href="idleloops-predictor.user.js.html#line512">line 512</a>
+        <a href="idleloops-predictor.user.js.html">idleloops-predictor.user.js</a>, <a href="idleloops-predictor.user.js.html#line597">line 597</a>
     </li></ul></dd>
     
 
@@ -275,7 +275,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="idleloops-predictor.user.js.html">idleloops-predictor.user.js</a>, <a href="idleloops-predictor.user.js.html#line323">line 323</a>
+        <a href="idleloops-predictor.user.js.html">idleloops-predictor.user.js</a>, <a href="idleloops-predictor.user.js.html#line408">line 408</a>
     </li></ul></dd>
     
 
@@ -355,7 +355,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="idleloops-predictor.user.js.html">idleloops-predictor.user.js</a>, <a href="idleloops-predictor.user.js.html#line315">line 315</a>
+        <a href="idleloops-predictor.user.js.html">idleloops-predictor.user.js</a>, <a href="idleloops-predictor.user.js.html#line400">line 400</a>
     </li></ul></dd>
     
 
@@ -441,7 +441,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="idleloops-predictor.user.js.html">idleloops-predictor.user.js</a>, <a href="idleloops-predictor.user.js.html#line337">line 337</a>
+        <a href="idleloops-predictor.user.js.html">idleloops-predictor.user.js</a>, <a href="idleloops-predictor.user.js.html#line422">line 422</a>
     </li></ul></dd>
     
 
@@ -527,7 +527,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="idleloops-predictor.user.js.html">idleloops-predictor.user.js</a>, <a href="idleloops-predictor.user.js.html#line276">line 276</a>
+        <a href="idleloops-predictor.user.js.html">idleloops-predictor.user.js</a>, <a href="idleloops-predictor.user.js.html#line358">line 358</a>
     </li></ul></dd>
     
 
@@ -685,7 +685,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="idleloops-predictor.user.js.html">idleloops-predictor.user.js</a>, <a href="idleloops-predictor.user.js.html#line717">line 717</a>
+        <a href="idleloops-predictor.user.js.html">idleloops-predictor.user.js</a>, <a href="idleloops-predictor.user.js.html#line864">line 864</a>
     </li></ul></dd>
     
 
@@ -708,6 +708,304 @@
 
 
 
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".template"><span class="type-signature">(static) </span>template<span class="signature">(affected, resources, snapshots, isValid)</span><span class="type-signature"> &rarr; {string}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Generate the element showing the resources accumulated for an action in the action list.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>affected</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;string></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Names of resources to display</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>resources</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Koviko.Predictor.html#~Resources">Koviko.Predictor~Resources</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Accumulated resources</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>snapshots</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Snapshots with value comparisons
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>stats</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Koviko.Snapshot.html">Koviko.Snapshot</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Value comparisons of stats from one snapshot to the next</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>skills</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Koviko.Snapshot.html">Koviko.Snapshot</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Value comparisons of skills from one snapshot to the next</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>isValid</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Whether the amount of mana remaining is valid for this action</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="idleloops-predictor.user.js.html">idleloops-predictor.user.js</a>, <a href="idleloops-predictor.user.js.html#line739">line 739</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    HTML of the new element
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">string</span>
+
+
+    </dd>
+</dl>
+
+    
 
 
 
@@ -771,7 +1069,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="idleloops-predictor.user.js.html">idleloops-predictor.user.js</a>, <a href="idleloops-predictor.user.js.html#line262">line 262</a>
+        <a href="idleloops-predictor.user.js.html">idleloops-predictor.user.js</a>, <a href="idleloops-predictor.user.js.html#line344">line 344</a>
     </li></ul></dd>
     
 
@@ -813,7 +1111,7 @@
 
 
 <div class="description">
-    Perform one tick of a prediction
+    Perform one tick of a prediction.
 </div>
 
 
@@ -929,7 +1227,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="idleloops-predictor.user.js.html">idleloops-predictor.user.js</a>, <a href="idleloops-predictor.user.js.html#line638">line 638</a>
+        <a href="idleloops-predictor.user.js.html">idleloops-predictor.user.js</a>, <a href="idleloops-predictor.user.js.html#line785">line 785</a>
     </li></ul></dd>
     
 
@@ -1162,7 +1460,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="idleloops-predictor.user.js.html">idleloops-predictor.user.js</a>, <a href="idleloops-predictor.user.js.html#line527">line 527</a>
+        <a href="idleloops-predictor.user.js.html">idleloops-predictor.user.js</a>, <a href="idleloops-predictor.user.js.html#line612">line 612</a>
     </li></ul></dd>
     
 
@@ -1252,7 +1550,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="idleloops-predictor.user.js.html">idleloops-predictor.user.js</a>, <a href="idleloops-predictor.user.js.html#line217">line 217</a>
+        <a href="idleloops-predictor.user.js.html">idleloops-predictor.user.js</a>, <a href="idleloops-predictor.user.js.html#line299">line 299</a>
     </li></ul></dd>
     
 
@@ -1422,7 +1720,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="idleloops-predictor.user.js.html">idleloops-predictor.user.js</a>, <a href="idleloops-predictor.user.js.html#line194">line 194</a>
+        <a href="idleloops-predictor.user.js.html">idleloops-predictor.user.js</a>, <a href="idleloops-predictor.user.js.html#line276">line 276</a>
     </li></ul></dd>
     
 
@@ -1494,7 +1792,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="idleloops-predictor.user.js.html">idleloops-predictor.user.js</a>, <a href="idleloops-predictor.user.js.html#line212">line 212</a>
+        <a href="idleloops-predictor.user.js.html">idleloops-predictor.user.js</a>, <a href="idleloops-predictor.user.js.html#line294">line 294</a>
     </li></ul></dd>
     
 
@@ -1566,7 +1864,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="idleloops-predictor.user.js.html">idleloops-predictor.user.js</a>, <a href="idleloops-predictor.user.js.html#line207">line 207</a>
+        <a href="idleloops-predictor.user.js.html">idleloops-predictor.user.js</a>, <a href="idleloops-predictor.user.js.html#line289">line 289</a>
     </li></ul></dd>
     
 
@@ -1759,7 +2057,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="idleloops-predictor.user.js.html">idleloops-predictor.user.js</a>, <a href="idleloops-predictor.user.js.html#line222">line 222</a>
+        <a href="idleloops-predictor.user.js.html">idleloops-predictor.user.js</a>, <a href="idleloops-predictor.user.js.html#line304">line 304</a>
     </li></ul></dd>
     
 
@@ -1831,7 +2129,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="idleloops-predictor.user.js.html">idleloops-predictor.user.js</a>, <a href="idleloops-predictor.user.js.html#line202">line 202</a>
+        <a href="idleloops-predictor.user.js.html">idleloops-predictor.user.js</a>, <a href="idleloops-predictor.user.js.html#line284">line 284</a>
     </li></ul></dd>
     
 
@@ -1861,13 +2159,13 @@
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Koviko.Prediction.html">Prediction</a></li><li><a href="Koviko.Predictor.html">Predictor</a></li></ul><h3>Namespaces</h3><ul><li><a href="Koviko.html">Koviko</a></li><li><a href="Koviko.Predictor_helpers.html">helpers</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Koviko.Prediction.html">Prediction</a></li><li><a href="Koviko.Predictor.html">Predictor</a></li><li><a href="Koviko.Snapshot.html">Snapshot</a></li></ul><h3>Namespaces</h3><ul><li><a href="Koviko.html">Koviko</a></li><li><a href="Koviko.Predictor_helpers.html">helpers</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sun Sep 02 2018 00:32:05 GMT-0400 (Eastern Daylight Time)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sun Sep 02 2018 18:26:50 GMT-0400 (Eastern Daylight Time)
 </footer>
 
 <script> prettyPrint(); </script>

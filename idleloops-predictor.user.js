@@ -189,6 +189,88 @@ const Koviko = {
     }
   },
 
+  /** A collection of attributes and a comparison of those attributes from one snapshot to the next. */
+  Snapshot: class {
+    /**
+     * Attributes to consider from one snapshot to the next.
+     * @typedef {Object.<string, number>} Koviko.Snapshot~Attributes
+     */
+
+    /**
+     * Comparison of current snapshot to last snapshot.
+     * @typedef {Object} Koviko.Snapshot~Comparison
+     * @prop {number} value New value after the snapshot is taken
+     * @prop {number} delta Difference between new value and old value
+     */
+
+    /**
+     * Create the snapshot handler.
+     * @param {Koviko.Snapshot~Attributes} attributes Attributes and their values
+     * @memberof Koviko.Snapshot
+     */
+    constructor(attributes) {
+      /**
+       * Valid attributes for a snapshot
+       * @member {Object.<string, number>}
+       */
+      this.attributes = {};
+
+      /**
+       * Whether the attributes have been initialized
+       * @member {boolean}
+       */
+      this._isInitialized = false;
+
+      if (attributes) {
+        this.init(attributes);
+      }
+    }
+
+    /**
+     * Initialize the attributes to consider in each snapshot.
+     * @param {Koviko.Snapshot~Attributes} attributes Attributes and their values
+     * @return {Object.<string, Koviko.Snapshot~Comparison>} Initial comparison values
+     * @memberof Koviko.Snapshot
+     */
+    init(attributes) {
+      for (let i in attributes) {
+        this.attributes[i] = { value: attributes[i], delta: null };
+      }
+
+      this._isInitialized = true;
+
+      return this.attributes;
+    }
+
+    /**
+     * Take a snapshot of the attributes and compare them to the previous snapshot.
+     * @param {Koviko.Snapshot~Attributes} attributes Attributes and their values
+     * @return {Object.<string, Koviko.Snapshot~Comparison>} Comparison values from the last snapshot to the current one
+     * @memberof Koviko.Snapshot
+     */
+    snap(attributes) {
+      if (!this._isInitialized) {
+        this.init(attributes);
+      }
+
+      for (let i in this.attributes) {
+        this.attributes[i].delta = attributes[i] - this.attributes[i].value;
+        this.attributes[i].value = attributes[i];
+      }
+
+      return this.attributes;
+    }
+
+    /**
+     * Get the snapshot.
+     * @return {Object.<string, Koviko.Snapshot~Comparison>} Comparison values from the last snapshot to the current one
+     * @memberof Koviko.Snapshot
+     */
+    get() {
+      return this.attributes;
+    }
+  },
+
   /** A predictor which uses Predictions to calculate and estimate an entire action list. */
   Predictor: class {
     /**
@@ -280,7 +362,10 @@ const Koviko = {
       // Build the CSS
       let css = `
       .nextActionContainer{width:auto!important;padding:0 4px}
+      #nextActionsList{height:100%!important}
+      #nextActionsList:hover{margin-left:-100%;padding-left:100%}
       span.koviko{font-weight:bold;color:#8293ff}
+      div.koviko{top:-5px;left:auto;right:100%}
       ul.koviko{display:inline-block;list-style:none;margin:0;padding:0;pointer-events:none}
       ul.koviko li{display:inline-block;margin: 0 2px;font-weight:bold;font-size:90%}
       ul.koviko.invalid li{color:#c00!important}
@@ -537,6 +622,17 @@ const Koviko = {
       };
 
       /**
+       * Snapshots of accumulated stats and accumulated skills
+       * @var {Object}
+       * @prop {Koviko.Snapshot} stats Snapshot of accumulated stats
+       * @prop {Koviko.Snapshot} skills Snapshot of accumulated skills
+       */
+      const snapshots = {
+        stats: new Koviko.Snapshot(state.stats),
+        skills: new Koviko.Snapshot(state.skills),
+      };
+
+      /**
        * Total mana used for the action list
        * @var {number}
        */
@@ -547,13 +643,6 @@ const Koviko = {
        * @var {Array.<string>}
        */
       const affected = Object.keys(actions.reduce((stats, x) => (x.name in this.predictions && this.predictions[x.name].affected || []).reduce((stats, name) => (stats[name] = true, stats), stats), {}));
-
-      /**
-       * Template function to create the display on a given action in the action list
-       * @param {Koviko.Predictor~Resources} resources Accumulated resources
-       * @param {boolean} isValid Whether the amount of mana remaining is valid for this action
-       */
-      const template = (resources, isValid) => (isValid = 'koviko' + (isValid ? '' : ' invalid'), `<ul class="${isValid}">` + affected.map(name => `<li class=${name}>${resources[name]}</li>`).join('') + '</ul>');
 
       // Initialize all affected resources
       affected.forEach(x => state.resources[x] || (state.resources[x] = 0));
@@ -609,8 +698,16 @@ const Koviko = {
             }
           }
 
+          // Update the snapshots
+          for (let i in snapshots) {
+            snapshots[i].snap(state[i]);
+          }
+
           // Update the view
-          div && (div.innerHTML += template(state.resources, isValid));
+          if (div) {
+            div.className += ' showthat';
+            div.innerHTML += this.template(affected, state.resources, snapshots, isValid);
+          }
         }
       });
 
@@ -629,7 +726,57 @@ const Koviko = {
     }
 
     /**
-     * Perform one tick of a prediction
+     * Generate the element showing the resources accumulated for an action in the action list.
+     * @param {Array.<string>} affected Names of resources to display
+     * @param {Koviko.Predictor~Resources} resources Accumulated resources
+     * @param {Object} snapshots Snapshots with value comparisons
+     * @param {Koviko.Snapshot} snapshots.stats Value comparisons of stats from one snapshot to the next
+     * @param {Koviko.Snapshot} snapshots.skills Value comparisons of skills from one snapshot to the next
+     * @param {boolean} isValid Whether the amount of mana remaining is valid for this action
+     * @return {string} HTML of the new element
+     * @memberof Koviko.Predictor
+     */
+    template(affected, resources, snapshots, isValid) {
+      isValid = isValid ? 'valid' : 'invalid';
+      let stats = snapshots.stats.get();
+      let skills = snapshots.skills.get();
+      let tooltip = '';
+
+      for (let i in stats) {
+        if (stats[i].delta) {
+          let level = {
+            start: Koviko.globals.getLevelFromExp(stats[i].value - stats[i].delta),
+            end: Koviko.globals.getLevelFromExp(stats[i].value),
+          };
+
+          tooltip += '<tr><td><b>' +
+            _txt(`stats>${i}>short_form`).toUpperCase() + '</b></td><td>' +
+            level.end + '</td><td>(+' +
+            (level.end - level.start) + ')</td></tr>';
+        }
+      }
+
+      for (let i in skills) {
+        if (skills[i].delta) {
+          let level = {
+            start: Koviko.globals.getSkillLevelFromExp(skills[i].value - skills[i].delta),
+            end: Koviko.globals.getSkillLevelFromExp(skills[i].value),
+          };
+
+          tooltip += '<tr><td><b>' +
+            _txt(`skills>${i}>label`).toUpperCase() + '</b></td><td>' +
+            level.end + '</td><td>(+' +
+            (level.end - level.start) + ')</td></tr>';
+        }
+      }
+
+      return `<ul class='koviko ${isValid}'>` +
+        affected.map(name => `<li class=${name}>${resources[name]}</li>`).join('') +
+        `</ul><div class='koviko showthis'><table>${tooltip}</table></div>`;
+    };
+
+    /**
+     * Perform one tick of a prediction.
      * @param {Koviko.Prediction} prediction Prediction object
      * @param {Koviko.Predictor~State} state State object
      * @return {boolean} Whether another tick can occur
