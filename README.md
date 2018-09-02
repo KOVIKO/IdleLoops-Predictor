@@ -48,7 +48,7 @@ The script keeps track of anything that can affect resources, both those that ar
 
 The results that you see in the IdleLoops Predictor UI are predicted based on your current skills at the moment in which the UI was last updated. This means that if you are gaining skills in the middle of a loop, updating the action list will make a prediction as though you were about to press the Restart button at that specific moment.
 
-## Tooltips
+### Tooltips
 
 Currently, the only way to display tooltips without ruining scrolling of the action list is to overlap the left-side current action list. Due to this requirement, sometimes the left-side current action list will not be interactable immediately after displaying tooltips from the Action List. As a workaround, either bring your mouse entirely past the top or past the bottom of the Action List and then you should be able to interact with the left-side current action list again.
 
