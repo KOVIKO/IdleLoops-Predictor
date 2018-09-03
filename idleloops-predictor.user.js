@@ -764,7 +764,7 @@ const Koviko = {
           };
 
           tooltip += '<tr><td><b>' +
-            _txt(`skills>${i}>label`).toUpperCase() + '</b></td><td>' +
+            i.toUpperCase() + '</b></td><td>' +
             level.end + '</td><td>(+' +
             (level.end - level.start) + ')</td></tr>';
         }
