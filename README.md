@@ -50,7 +50,7 @@ The results that you see in the IdleLoops Predictor UI are predicted based on yo
 
 ### Tooltips
 
-Currently, the only way to display tooltips without ruining scrolling of the action list is to overlap the left-side current action list. Due to this requirement, sometimes the left-side current action list will not be interactable immediately after displaying tooltips from the Action List. As a workaround, either bring your mouse entirely past the top or past the bottom of the Action List and then you should be able to interact with the left-side current action list again.
+Currently, the only way to display tooltips without ruining scrolling of the action list is to overlap the left-side current action list. Due to this requirement, sometimes the left-side current action list will not be interactable immediately after displaying tooltips from the Action List. Just move your mouse outside of the Action List UI element and then return to it from the left side.
 
 ### Performance
 

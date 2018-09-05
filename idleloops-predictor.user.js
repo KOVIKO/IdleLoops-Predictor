@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         IdleLoops Predictor
 // @namespace    https://github.com/Koviko/
-// @version      1.3.1
+// @version      1.3.2
 // @description  Predicts the amount of resources spent and gained by each action in the action list. Valid as of IdleLoops v.77.
 // @author       Koviko <koviko.net@gmail.com>
 // @website      http://koviko.net/
@@ -362,6 +362,7 @@ const Koviko = {
       // Build the CSS
       let css = `
       .nextActionContainer{width:auto!important;padding:0 4px}
+      #expandableList{overflow:hidden}
       #nextActionsList{height:100%!important}
       #nextActionsList:hover{margin-left:-100%;padding-left:100%}
       span.koviko{font-weight:bold;color:#8293ff}
