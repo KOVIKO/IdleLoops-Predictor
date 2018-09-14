@@ -72,6 +72,7 @@ const Koviko = {
    * @prop {function} getLevelFromExp Converts an amount of stat experience into a level
    * @prop {function} getSkillLevelFromExp Converts an amount of skill experience into a level
    * @prop {function} getTotalBonusXP Determine the current amount of bonus XP from talents and soulstones
+   * @prop {function} goldCostSmashPots Determine the amount of mana gained from smashing pots
    * @prop {function} goldCostLocks Determine the amount of gold gained from lockpicking
    * @prop {function} goldCostSQuests Determine the amount of gold gained from short quests
    * @prop {function} goldCostLQuests Determine the amount of gold gained from long quests
