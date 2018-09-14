@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         IdleLoops Predictor SerVamP
 // @namespace    https://github.com/SerVamP/
-// @version      1.4.3
+// @version      1.4.4
 // @description  Predicts the amount of resources spent and gained by each action in the action list. Valid as of IdleLoops v.76/Omsi6.
 // @author       Koviko <koviko.net@gmail.com>
 // @match        *omsi6.github.io/loops/*
@@ -525,14 +525,14 @@ const Koviko = {
         'Architect': { effect: (r, k) => (r.architect = (r.architect || 0) + 10 * h.getGuildRankBonus(r.crafts || 0), k.crafting += 40 * (1 + h.getTownLevelFromExp(r.architect) / 100)) },
         'Buy Pickaxe': { affected: ['gold'], effect: r => r.gold -= 200 },
         'Start Trek': {},
-        
+
         // Mt. Olympus
         'Climb Mountain': {},
         'Mana Geyser': { affected: ['mana'], effect: r => r.mana += 5000 },
         'Decipher Runes': {},
         'Explore Cavern': {},
         'Chronomancy': { effect: (r, k) => k.chronomancy += 100 },
-        
+
         // Basic loops
         'Heal The Sick': { affected: ['rep'], loop: {
           cost: (p, a) => segment => g.fibonacci(2 + Math.floor((p.completed + segment) / a.segments + .0000001)) * 5000,
@@ -562,14 +562,10 @@ const Koviko = {
         }},
         'Dark Ritual': { affected: ['ritual'], loop: {
           cost: (p) => segment => 1000000 * (segment * 2 + 1),
-          tick: (p, a, s, k) => offset => {
-            var temp = (g.getSkillLevelFromExp(k.dark) * (1 + g.getLevelFromExp(a.loopStats[(p.DarkRitualLoopCounter + offset) % a.loopStats.length]) / 100))
-            console.log(k.dark);
-            return (g.getSkillLevelFromExp(k.dark) * (1 + g.getLevelFromExp(a.loopStats[(p.DarkRitualLoopCounter + offset) % a.loopStats.length]) / 100));
-          },
+          tick: (p, a, s, k) => offset => (g.getSkillLevelFromExp(k.dark) * (1 + g.getLevelFromExp(a.loopStats[(p.completed + offset) % a.loopStats.length]) / 100)),
           effect: { loop: r => r.ritual++ }
         }},
-        
+
         // Dungeon-style loops
         'Small Dungeon': { affected: ['soul'], loop: {
           max: a => g.dungeons[a.dungeonNum].length,
