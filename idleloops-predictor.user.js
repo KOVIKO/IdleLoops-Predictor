@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         IdleLoops Predictor
-// @namespace    https://github.com/Koviko/
+// @namespace    https://github.com/SerVamP/
 // @version      1.3.4
 // @description  Predicts the amount of resources spent and gained by each action in the action list. Valid as of IdleLoops v.77.
 // @author       Koviko <koviko.net@gmail.com>
@@ -521,6 +521,7 @@ const Koviko = {
         'Apprentice': { effect: (r, k) => (r.apprentice = (r.apprentice || 0) + 30 * h.getGuildRankBonus(r.crafts || 0), k.crafting += 10 * (1 + h.getTownLevelFromExp(r.apprentice) / 100)) },
         'Mason': { effect: (r, k) => (r.mason = (r.mason || 0) + 20 * h.getGuildRankBonus(r.crafts || 0), k.crafting += 20 * (1 + h.getTownLevelFromExp(r.mason) / 100)) },
         'Architect': { effect: (r, k) => (r.architect = (r.architect || 0) + 10 * h.getGuildRankBonus(r.crafts || 0), k.crafting += 40 * (1 + h.getTownLevelFromExp(r.architect) / 100)) },
+        'Buy Pickaxe': { affected: ['gold'], effect: r => r.gold -= 200 },
         'Start Trek': {},
         
         // Town 4
