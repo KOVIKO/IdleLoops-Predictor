@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         IdleLoops Predictor SerVamP
 // @namespace    https://github.com/SerVamP/
-// @version      1.4.1
+// @version      1.4.2
 // @description  Predicts the amount of resources spent and gained by each action in the action list. Valid as of IdleLoops v.76/Omsi6.
 // @author       Koviko <koviko.net@gmail.com>
 // @match        *omsi6.github.io/loops/*
@@ -562,7 +562,7 @@ const Koviko = {
         }},
         'Dark Ritual': { affected: ['ritual'], loop: {
           cost: (p) => segment => 1000000 * (segment * 2 + 1),
-          tick: (p, a, s, k) => offset => g.getSkillLevelFromExp(k.dark) * (1 + g.getLevel(a.loopStats[(p.DarkRitualLoopCounter + offset) % a.loopStats.length]) / 100),
+          tick: (p, a, s, k) => offset => g.getSkillLevelFromExp(k.dark) * (1 + g.getLevelFromExp(a.loopStats[(p.DarkRitualLoopCounter + offset) % a.loopStats.length]) / 100),
           effect: { loop: r => r.ritual++ }
         }},
 
