@@ -560,7 +560,11 @@ const Koviko = {
             * Math.sqrt(1 + p.total / 1000),
           effect: { segment: (r, k) => (r.gold += 10, r.crafts++, k.crafting += 50) }
         }},
-        'Dark Ritual': {},
+        'Dark Ritual': { affected: ['ritual'], loop: {
+          cost: (p) => segment => 1000000 * (segment * 2 + 1),
+          tick: (p, a, s, k) => offset => g.getSkillLevelFromExp(k.dark) * (1 + g.getLevel(a.loopStats[(p.DarkRitualLoopCounter + offset) % a.loopStats.length]) / 100),
+          effect: { loop: r => r.ritual++ }
+        }},
 
         // Dungeon-style loops
         'Small Dungeon': { affected: ['soul'], loop: {
