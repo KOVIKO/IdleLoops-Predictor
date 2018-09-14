@@ -4,8 +4,6 @@
 // @version      1.3.4
 // @description  Predicts the amount of resources spent and gained by each action in the action list. Valid as of IdleLoops v.77.
 // @author       Koviko <koviko.net@gmail.com>
-// @website      http://koviko.net/
-// @match        *stopsign.github.io/idleLoops/*
 // @match        *omsi6.github.io/loops/*
 // @grant        none
 // @run-at       document-idle
