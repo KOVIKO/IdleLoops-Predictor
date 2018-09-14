@@ -564,7 +564,7 @@ const Koviko = {
           cost: (p) => segment => 1000000 * (segment * 2 + 1),
           tick: (p, a, s, k) => offset => {
             var temp = (g.getSkillLevelFromExp(k.dark) * (1 + g.getLevelFromExp(a.loopStats[(p.DarkRitualLoopCounter + offset) % a.loopStats.length]) / 100))
-            console.log(temp);
+            console.log(k.dark);
             return (g.getSkillLevelFromExp(k.dark) * (1 + g.getLevelFromExp(a.loopStats[(p.DarkRitualLoopCounter + offset) % a.loopStats.length]) / 100));
           },
           effect: { loop: r => r.ritual++ }
