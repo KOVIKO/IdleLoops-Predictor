@@ -534,12 +534,12 @@ const Koviko = {
         'Chronomancy': { effect: (r, k) => k.chronomancy += 100 },
         
         // Basic loops
-        'Heal The Sick': { affected: ['rep'], effect: (r, k) => k.magic += 10, loop: {
+        'Heal The Sick': { affected: ['rep'], loop: {
           cost: (p, a) => segment => g.fibonacci(2 + Math.floor((p.completed + segment) / a.segments + .0000001)) * 5000,
           tick: (p, a, s, k) => offset => g.getSkillLevelFromExp(k.magic) * Math.sqrt(1 + p.total / 100) * (1 + g.getLevelFromExp(s[a.loopStats[(p.completed + offset) % a.loopStats.length]]) / 100),
           effect: { loop: r => r.rep += 3 },
         }},
-        'Fight Monsters': { affected: ['gold'], effect: (r, k) => k.combat += 10, loop: {
+        'Fight Monsters': { affected: ['gold'], loop: {
           cost: (p, a) => segment => g.fibonacci(Math.floor((p.completed + segment) - p.completed / a.segments + .0000001)) * 10000,
           tick: (p, a, s, k) => offset => g.getSkillLevelFromExp(k.combat) * Math.sqrt(1 + p.total / 100) * (1 + g.getLevelFromExp(s[a.loopStats[(p.completed + offset) % a.loopStats.length]]) / 100),
           effect: { segment: r => r.gold += 20 },
