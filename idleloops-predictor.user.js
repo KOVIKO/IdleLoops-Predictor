@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         IdleLoops Predictor SerVamP
 // @namespace    https://github.com/SerVamP/
-// @version      1.4.5
+// @version      1.4.6
 // @description  Predicts the amount of resources spent and gained by each action in the action list. Valid as of IdleLoops v.76/Omsi6.
 // @author       Koviko <koviko.net@gmail.com>
 // @match        *omsi6.github.io/loops/*
@@ -69,7 +69,6 @@ const Koviko = {
    * @prop {function} fibonacci Calculates the value of the given index of the Fibonacci sequence
    * @prop {function} precision3 Rounds numbers to a precision of 3
    * @prop {function} translateClassNames Converts an action name to a {@link Koviko~Action} object
-   * @prop {function} getLevel Determine the level of an stat
    * @prop {function} getLevelFromExp Converts an amount of stat experience into a level
    * @prop {function} getSkillLevelFromExp Converts an amount of skill experience into a level
    * @prop {function} getTotalBonusXP Determine the current amount of bonus XP from talents and soulstones
@@ -90,7 +89,6 @@ const Koviko = {
     fibonacci: null,
     precision3: null,
     translateClassNames: null,
-    getLevel: null,
     getLevelFromExp: null,
     getSkillLevelFromExp: null,
     getTotalBonusXP: null,
@@ -564,7 +562,7 @@ const Koviko = {
         }},
         'Dark Ritual': { affected: ['ritual'], loop: {
           cost: p => segment => 1000000 * (segment * 2 + 1),
-          tick: (p, a, s, k) => offset => (g.getSkillLevelFromExp(k.dark) * (1 + g.getLevel(a.loopStats[(p.completed + offset) % a.loopStats.length]) / 100)),
+          tick: (p, a, s, k) => offset => (g.getSkillLevelFromExp(k.dark) * (1 + g.getLevelFromExp(s[a.loopStats[(p.completed + offset) % a.loopStats.length]]) / 100)),
           effect: { loop: r => r.ritual++ }
         }},
 
