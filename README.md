@@ -8,7 +8,7 @@ You will need a userscript manager like [Tampermonkey for Chrome](https://chrome
 
 To install the script, click the `idleloops-predictor.user.js` in GitHub and then click the **`Raw`** button. Your userscript manager should automatically give you the option to install the script. Alternatively, you can just follow the link below:
 
-**[»» Install IdleLoops Predictor ««](https://github.com/Koviko/IdleLoops-Predictor/raw/master/idleloops-predictor.user.js)**
+**[»» Install IdleLoops Predictor ««](https://github.com/SerVamP/IdleLoops-Predictor/raw/master/idleloops-predictor.user.js)**
 
 ## The UI
 
