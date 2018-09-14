@@ -562,10 +562,14 @@ const Koviko = {
         }},
         'Dark Ritual': { affected: ['ritual'], loop: {
           cost: (p) => segment => 1000000 * (segment * 2 + 1),
-          tick: (p, a, s, k) => offset => g.getSkillLevelFromExp(k.dark) * (1 + g.getLevelFromExp(a.loopStats[(p.DarkRitualLoopCounter + offset) % a.loopStats.length]) / 100),
+          tick: (p, a, s, k) => offset => {
+            var temp = (g.getSkillLevelFromExp(k.dark) * (1 + g.getLevelFromExp(a.loopStats[(p.DarkRitualLoopCounter + offset) % a.loopStats.length]) / 100))
+            console.log(temp);
+            return (g.getSkillLevelFromExp(k.dark) * (1 + g.getLevelFromExp(a.loopStats[(p.DarkRitualLoopCounter + offset) % a.loopStats.length]) / 100));
+          },
           effect: { loop: r => r.ritual++ }
         }},
-
+        
         // Dungeon-style loops
         'Small Dungeon': { affected: ['soul'], loop: {
           max: a => g.dungeons[a.dungeonNum].length,
@@ -596,7 +600,7 @@ const Koviko = {
           effect: { loop: r => r.soul++ }
         }},
       };
-
+      
       /**
        * Prediction collection
        * @member {Object.<string, Prediction>}
