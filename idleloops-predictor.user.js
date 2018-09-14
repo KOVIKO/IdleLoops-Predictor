@@ -382,6 +382,7 @@ const Koviko = {
       ul.koviko .potions{color:#00b2ee}
       ul.koviko .crafts{color:#777777}
       ul.koviko .adventures{color:#191919}
+      ul.koviko .ritual{color:#ff1493}
       `;
 
       // Create the <style> element if it doesn't already exist
@@ -508,7 +509,6 @@ const Koviko = {
         'Clear Thicket': {},
         'Talk To Witch': {},
         'Dark Magic': { effect: (r, k) => k.dark += 100 },
-        'Dark Ritual': {},
         'Continue On': {},
 
         // Merchanton
@@ -560,9 +560,10 @@ const Koviko = {
             * Math.sqrt(1 + p.total / 1000),
           effect: { segment: (r, k) => (r.gold += 10, r.crafts++, k.crafting += 50) }
         }},
+        'Dark Ritual': {},
 
         // Dungeon-style loops
-        'Small Dungeon': { affected: ['soul'], effect: (r, k) => (k.combat += 5, k.magic += 5), loop: {
+        'Small Dungeon': { affected: ['soul'], loop: {
           max: a => g.dungeons[a.dungeonNum].length,
           cost: (p, a) => segment => g.precision3(Math.pow(2, Math.floor((p.completed + segment) / a.segments + .0000001)) * 15000),
           tick: (p, a, s, k) => offset => {
@@ -576,7 +577,7 @@ const Koviko = {
           },
           effect: { loop: r => r.soul++ },
         }},
-        'Large Dungeon': { affected: ['soul'], effect: (r, k) => (k.combat += 15, k.magic += 15), loop: {
+        'Large Dungeon': { affected: ['soul'], loop: {
           max: a => g.dungeons[a.dungeonNum].length,
           cost: (p, a) => segment => g.precision3(Math.pow(3, Math.floor((p.completed + segment) / a.segments + .0000001)) * 5e5),
           tick: (p, a, s, k, r) => offset => {
@@ -589,21 +590,6 @@ const Koviko = {
               : 0;
           },
           effect: { loop: r => r.soul++ }
-        }},
-        'Tournament': { affected: ['gold'], loop: {
-          max: () => 6,
-          cost: (p) => segment => g.precision3(Math.pow(1.1, p.completed + segment)) * 5e6,
-          tick: (p, a, s, k, r) => offset => {
-            return (h.getSelfCombat(r, k) + g.getSkillLevelFromExp(k.magic))
-              * (1 + g.getLevelFromExp(s[a.loopStats[(p.completed + offset) % a.loopStats.length]]) / 100)
-              * Math.sqrt(1 + p.total / 1000);
-          },
-          effect: { segment: (r, k) => {
-            r.tourney = (r.tourney || 0) + 1;
-            let floor = Math.floor((r.tourney - 1) / 3 + .00001);
-            r.gold += 40 + floor * 20;
-            k.combat += 100 + floor * 50;
-          }}
         }},
       };
 
