@@ -598,7 +598,7 @@ const Koviko = {
           effect: { loop: r => r.soul++ }
         }},
       };
-      
+
       /**
        * Prediction collection
        * @member {Object.<string, Prediction>}
