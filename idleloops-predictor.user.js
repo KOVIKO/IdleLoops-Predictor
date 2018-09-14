@@ -5,7 +5,8 @@
 // @description  Predicts the amount of resources spent and gained by each action in the action list. Valid as of IdleLoops v.77.
 // @author       Koviko <koviko.net@gmail.com>
 // @website      http://koviko.net/
-// @match        *://stopsign.github.io/idleLoops/*
+// @match        *stopsign.github.io/idleLoops/*
+// @match        *omsi6.github.io/loops/*
 // @grant        none
 // @run-at       document-idle
 // ==/UserScript==
@@ -502,6 +503,10 @@ const Koviko = {
         'Brew Potions': { affected: ['herbs', 'potions'], effect: (r, k) => (r.herbs -= 10, r.potions++, k.alchemy += 25, k.magic += 50) },
         'Train Dex': {},
         'Train Speed': {},
+        'Clear Thicket': {},
+        'Talk To Witch': {},
+        'Dark Magic': { effect: (r, k) => k.dark += 100 },
+        'Dark Ritual': {},
         'Continue On': {},
 
         // Merchanton
@@ -516,7 +521,15 @@ const Koviko = {
         'Apprentice': { effect: (r, k) => (r.apprentice = (r.apprentice || 0) + 30 * h.getGuildRankBonus(r.crafts || 0), k.crafting += 10 * (1 + h.getTownLevelFromExp(r.apprentice) / 100)) },
         'Mason': { effect: (r, k) => (r.mason = (r.mason || 0) + 20 * h.getGuildRankBonus(r.crafts || 0), k.crafting += 20 * (1 + h.getTownLevelFromExp(r.mason) / 100)) },
         'Architect': { effect: (r, k) => (r.architect = (r.architect || 0) + 10 * h.getGuildRankBonus(r.crafts || 0), k.crafting += 40 * (1 + h.getTownLevelFromExp(r.architect) / 100)) },
-
+        'Start Trek': {},
+        
+        // Town 4
+        'Climb Mountain': {},
+        'Mana Geyser': { affected: ['mana'], effect: r => r.mana += 5000 },
+        'Decipher Runes': {},
+        'Explore Cavern': {},
+        'Chronomancy': { effect: (r, k) => k.chronomancy += 100 },
+        
         // Basic loops
         'Heal The Sick': { affected: ['rep'], effect: (r, k) => k.magic += 10, loop: {
           cost: (p, a) => segment => g.fibonacci(2 + Math.floor((p.completed + segment) / a.segments + .0000001)) * 5000,
