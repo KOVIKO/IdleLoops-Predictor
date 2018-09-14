@@ -2,7 +2,7 @@
 // @name         IdleLoops Predictor SerVamP
 // @namespace    https://github.com/SerVamP/
 // @version      1.4
-// @description  Predicts the amount of resources spent and gained by each action in the action list. Valid as of IdleLoops v.77.
+// @description  Predicts the amount of resources spent and gained by each action in the action list. Valid as of IdleLoops v.76/Omsi6.
 // @author       Koviko <koviko.net@gmail.com>
 // @match        *omsi6.github.io/loops/*
 // @grant        none
@@ -472,7 +472,7 @@ const Koviko = {
       const predictions = {
         // Beginnersville
         'Wander': {},
-        'Smash Pots': { affected: ['mana'], effect: r => r.mana += 100 },
+        'Smash Pots': { affected: ['mana'], effect: r => r.mana += g.goldCostSmashPots() },
         'Pick Locks': { affected: ['gold'], effect: r => r.gold += g.goldCostLocks() },
         'Buy Glasses': { effect: r => (r.gold -= 10, r.glasses = true) },
         'Buy Mana': { affected: ['mana', 'gold'], effect: r => (r.mana += r.gold * 50, r.gold = 0) },
@@ -522,7 +522,7 @@ const Koviko = {
         'Buy Pickaxe': { affected: ['gold'], effect: r => r.gold -= 200 },
         'Start Trek': {},
         
-        // Town 4
+        // Mt. Olympus
         'Climb Mountain': {},
         'Mana Geyser': { affected: ['mana'], effect: r => r.mana += 5000 },
         'Decipher Runes': {},
