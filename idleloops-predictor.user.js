@@ -90,6 +90,7 @@ const Koviko = {
     getLevelFromExp: null,
     getSkillLevelFromExp: null,
     getTotalBonusXP: null,
+    goldCostSmashPots: null,
     goldCostLocks: null,
     goldCostSQuests: null,
     goldCostLQuests: null,
