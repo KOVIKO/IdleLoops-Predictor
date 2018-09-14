@@ -494,7 +494,7 @@ const Koviko = {
 
         // Forest Path
         'Explore Forest': {},
-        'Wild Mana': { affected: ['mana'], effect: r => r.mana += 250 },
+        'Wild Mana': { affected: ['mana'], effect: r => r.mana += g.goldCostWildMana() },
         'Gather Herbs': { affected: ['herbs'], effect: r => r.herbs += 1 },
         'Hunt': { affected: ['hide'], effect: r => r.hide += 1 },
         'Sit By Waterfall': {},
