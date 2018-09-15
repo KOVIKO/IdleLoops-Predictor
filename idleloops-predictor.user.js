@@ -477,27 +477,48 @@ const Koviko = {
       const predictions = {
         // Beginnersville
         'Wander': {},
-        'Smash Pots': { affected: ['mana'], effect: r => r.mana += g.goldCostSmashPots() },
-        'Pick Locks': { affected: ['gold'], effect: r => r.gold += g.goldCostLocks() },
+        'Smash Pots': { affected: ['mana'], effect: r => {
+          r.temp1 = (r.temp1 || 0) + 1;
+          r.mana += r.temp1 <= towns[0].goodPots ? g.goldCostSmashPots() : 0;
+        }},
+        'Pick Locks': { affected: ['gold'], effect: r => {
+          r.temp2 = (r.temp2 || 0) + 1;
+          r.gold += r.temp2 <= towns[0].goodLocks ? g.goldCostLocks() : 0;
+        }},
         'Buy Glasses': { effect: r => (r.gold -= 10, r.glasses = true) },
         'Buy Mana': { affected: ['mana', 'gold'], effect: r => (r.mana += r.gold * 50, r.gold = 0) },
         'Meet People': {},
         'Train Strength': {},
-        'Short Quest': { affected: ['gold'], effect: r => r.gold += g.goldCostSQuests() },
+        'Short Quest': { affected: ['gold'], effect: r => {
+          r.temp3 = (r.temp3 || 0) + 1;
+          r.gold += r.temp3 <= towns[0].goodSQuests ? g.goldCostSQuests() : 0;
+        }},
         'Investigate': {},
-        'Long Quest': { affected: ['gold', 'rep'], effect: r => (r.gold += g.goldCostLQuests(), r.rep += 1) },
+        'Long Quest': { affected: ['gold', 'rep'], effect: r => {
+          r.temp4 = (r.temp4 || 0) + 1;
+          r.gold += r.temp4 <= towns[0].goodLQuests ? g.goldCostLQuests() : 0;
+        }},
         'Throw Party': { affected: ['rep'], effect: r => r.rep -= 2 },
         'Warrior Lessons': { effect: (r, k) => k.combat += 100 },
         'Mage Lessons': { effect: (r, k) => k.magic += 100 * (1 + g.getSkillLevelFromExp(k.alchemy) / 100) },
         'Buy Supplies': { affected: ['gold'], effect: r => (r.gold -= 300 - Math.max((r.supplyDiscount || 0) * 20, 0), r.supplies = (r.supplies || 0) + 1) },
-        'Haggle': { effect: r => (r.rep--, r.supplyDiscount = (r.supplyDiscount || 0) + 1) },
+        'Haggle': { effect: r => (r.rep--, r.supplyDiscount = (r.supplyDiscount >= 15 ? 15 : (r.supplyDiscount || 0) + 1)) },
         'Start Journey': { effect: r => r.supplies = (r.supplies || 0) - 1 },
 
         // Forest Path
         'Explore Forest': {},
-        'Wild Mana': { affected: ['mana'], effect: r => r.mana += g.goldCostWildMana() },
-        'Gather Herbs': { affected: ['herbs'], effect: r => r.herbs += 1 },
-        'Hunt': { affected: ['hide'], effect: r => r.hide += 1 },
+        'Wild Mana': { affected: ['mana'], effect: r => {
+          r.temp5 = (r.temp5 || 0) + 1;
+          r.mana += r.temp5 <= towns[1].goodWildMana ? g.goldCostWildMana() : 0;
+        }},
+        'Gather Herbs': { affected: ['herbs'], effect: r => {
+          r.temp6 = (r.temp6 || 0) + 1;
+          r.herbs += r.temp6 <= towns[1].goodHerbs ? 1 : 0;
+        }},
+        'Hunt': { affected: ['hide'], effect: r => {
+          r.temp7 = (r.temp7 || 0) + 1;
+          r.hide += r.temp7 <= towns[1].goodHunt ? 1 : 0;
+        }},
         'Sit By Waterfall': {},
         'Old Shortcut': {},
         'Talk To Hermit': {},
@@ -513,7 +534,11 @@ const Koviko = {
 
         // Merchanton
         'Explore City': {},
-        'Gamble': { affected: ['gold', 'rep'], effect: r => (r.rep--, r.gold += 60 - 20) },
+        'Gamble': { affected: ['gold', 'rep'], effect: r => {
+          r.rep--;
+          r.temp8 = (r.temp8 || 0) + 1;
+          r.gold += r.temp8 <= towns[2].goodGamble ? 40 : 0;
+        }},
         'Get Drunk': { affected: ['rep'], effect: r => r.rep-- },
         'Purchase Mana': { affected: ['mana', 'gold'], effect: r => (r.mana += r.gold * 50, r.gold = 0) },
         'Sell Potions': { affected: ['gold', 'potions'], effect: (r, k) => (r.gold += r.potions * g.getSkillLevelFromExp(k.alchemy), r.potions = 0) },
@@ -528,7 +553,10 @@ const Koviko = {
 
         // Mt. Olympus
         'Climb Mountain': {},
-        'Mana Geyser': { affected: ['mana'], effect: r => r.mana += 5000 },
+        'Mana Geyser': { affected: ['mana'], effect: r => {
+          r.temp9 = (r.temp9 || 0) + 1;
+          r.mana += r.temp9 <= towns[3].goodGeysers ? 5000 : 0;
+        }},
         'Decipher Runes': {},
         'Explore Cavern': {},
         'Chronomancy': { effect: (r, k) => k.chronomancy += 100 },
