@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         IdleLoops Predictor SerVamP
 // @namespace    https://github.com/SerVamP/
-// @version      1.4.7
+// @version      1.4.8
 // @description  Predicts the amount of resources spent and gained by each action in the action list. Valid as of IdleLoops v.76/Omsi6.
 // @author       Koviko <koviko.net@gmail.com>
 // @match        *omsi6.github.io/loops/*
@@ -497,6 +497,7 @@ const Koviko = {
         'Long Quest': { affected: ['gold', 'rep'], effect: r => {
           r.temp4 = (r.temp4 || 0) + 1;
           r.gold += r.temp4 <= towns[0].goodLQuests ? g.goldCostLQuests() : 0;
+          r.rep += r.temp4 <= towns[0].goodLQuests ? 1 : 0;
         }},
         'Throw Party': { affected: ['rep'], effect: r => r.rep -= 2 },
         'Warrior Lessons': { effect: (r, k) => k.combat += 100 },
@@ -535,9 +536,9 @@ const Koviko = {
         // Merchanton
         'Explore City': {},
         'Gamble': { affected: ['gold', 'rep'], effect: r => {
-          r.rep--;
           r.temp8 = (r.temp8 || 0) + 1;
           r.gold += r.temp8 <= towns[2].goodGamble ? 40 : 0;
+          r.rep -= r.temp8 <= towns[2].goodGamble ? 1 : 0;
         }},
         'Get Drunk': { affected: ['rep'], effect: r => r.rep-- },
         'Purchase Mana': { affected: ['mana', 'gold'], effect: r => (r.mana += r.gold * 50, r.gold = 0) },
