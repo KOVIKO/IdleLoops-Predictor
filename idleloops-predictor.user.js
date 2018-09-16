@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         IdleLoops Predictor SerVamP
 // @namespace    https://github.com/SerVamP/
-// @version      1.4.8
+// @version      1.4.9
 // @description  Predicts the amount of resources spent and gained by each action in the action list. Valid as of IdleLoops v.76/Omsi6.
 // @author       Koviko <koviko.net@gmail.com>
 // @match        *omsi6.github.io/loops/*
@@ -503,7 +503,11 @@ const Koviko = {
         'Warrior Lessons': { effect: (r, k) => k.combat += 100 },
         'Mage Lessons': { effect: (r, k) => k.magic += 100 * (1 + g.getSkillLevelFromExp(k.alchemy) / 100) },
         'Buy Supplies': { affected: ['gold'], effect: r => (r.gold -= 300 - Math.max((r.supplyDiscount || 0) * 20, 0), r.supplies = (r.supplies || 0) + 1) },
-        'Haggle': { effect: r => (r.rep--, r.supplyDiscount = (r.supplyDiscount >= 15 ? 15 : (r.supplyDiscount || 0) + 1)) },
+        'Haggle': { effect: r => {
+          if ( r.rep > 0 ) {
+            (r.rep--, r.supplyDiscount = (r.supplyDiscount >= 15 ? 15 : (r.supplyDiscount || 0) + 1))
+          }
+        }},
         'Start Journey': { effect: r => r.supplies = (r.supplies || 0) - 1 },
 
         // Forest Path
@@ -524,8 +528,16 @@ const Koviko = {
         'Old Shortcut': {},
         'Talk To Hermit': {},
         'Practical Magic': { effect: (r, k) => k.practical += 100 },
-        'Learn Alchemy': { affected: ['herbs'], effect: (r, k) => (r.herbs -= 10, k.alchemy += 50, k.magic += 50) },
-        'Brew Potions': { affected: ['herbs', 'potions'], effect: (r, k) => (r.herbs -= 10, r.potions++, k.alchemy += 25, k.magic += 50) },
+        'Learn Alchemy': { affected: ['herbs'], effect: (r, k) => {
+          if ( r.herbs >= 10 ) {
+            (r.herbs -= 10, k.alchemy += 50, k.magic += 50)
+          }
+        }},
+        'Brew Potions': { affected: ['herbs', 'potions'], effect: (r, k) => {
+          if ( r.herbs >= 10 ) {
+            (r.herbs -= 10, r.potions++, k.alchemy += 25, k.magic += 50)
+          }
+        }},
         'Train Dex': {},
         'Train Speed': {},
         'Clear Thicket': {},
@@ -536,12 +548,18 @@ const Koviko = {
         // Merchanton
         'Explore City': {},
         'Gamble': { affected: ['gold', 'rep'], effect: r => {
-          r.temp8 = (r.temp8 || 0) + 1;
-          r.gold += r.temp8 <= towns[2].goodGamble ? 40 : 0;
-          r.rep -= r.temp8 <= towns[2].goodGamble ? 1 : 0;
+          if ( r.rep >= -5 ) {
+            r.temp8 = (r.temp8 || 0) + 1;
+            r.gold += r.temp8 <= towns[2].goodGamble ? 40 : 0;
+            r.rep -= r.temp8 <= towns[2].goodGamble ? 1 : 0;
+          }
         }},
-        'Get Drunk': { affected: ['rep'], effect: r => r.rep-- },
-        'Purchase Mana': { affected: ['mana', 'gold'], effect: r => (r.mana += r.gold * 50, r.gold = 0) },
+        'Get Drunk': { affected: ['rep'], effect: r => {
+          if ( r.rep >= -3 ) {
+            r.rep--
+          }
+        }},
+        /*'Purchase Mana': { affected: ['mana', 'gold'], effect: r => (r.mana += r.gold * 50, r.gold = 0) },*/
         'Sell Potions': { affected: ['gold', 'potions'], effect: (r, k) => (r.gold += r.potions * g.getSkillLevelFromExp(k.alchemy), r.potions = 0) },
         'Read Books': {},
         'Gather Team': { affected: ['gold'], effect: r => (r.team = (r.team || 0) + 1, r.gold -= r.team * 200) },
