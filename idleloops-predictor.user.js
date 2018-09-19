@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         IdleLoops Predictor SerVamP
 // @namespace    https://github.com/SerVamP/
-// @version      1.4.9
+// @version      1.5
 // @description  Predicts the amount of resources spent and gained by each action in the action list. Valid as of IdleLoops v.76/Omsi6.
 // @author       Koviko <koviko.net@gmail.com>
 // @match        *omsi6.github.io/loops/*
@@ -559,7 +559,7 @@ const Koviko = {
             r.rep--
           }
         }},
-        /*'Purchase Mana': { affected: ['mana', 'gold'], effect: r => (r.mana += r.gold * 50, r.gold = 0) },*/
+        'Purchase Mana': { affected: ['mana', 'gold'], effect: r => (r.mana += r.gold * 50, r.gold = 0) },
         'Sell Potions': { affected: ['gold', 'potions'], effect: (r, k) => (r.gold += r.potions * g.getSkillLevelFromExp(k.alchemy), r.potions = 0) },
         'Read Books': {},
         'Gather Team': { affected: ['gold'], effect: r => (r.team = (r.team || 0) + 1, r.gold -= r.team * 200) },
