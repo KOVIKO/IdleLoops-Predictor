@@ -542,9 +542,9 @@ const Koviko = {
         'Train Dex': {},
         'Train Speed': {},
         'Follow Flowers': {},
-        'Clear Thicket': { affected: ['rep'], effect: r => r.rep-- },
+        'Clear Thicket': {},
         'Talk To Witch': {},
-        'Dark Magic': { effect: (r, k) => k.dark += 100 },
+        'Dark Magic': { affected: ['rep'], effect: (r, k) => (r.rep--, k.dark += 100) },
         'Continue On': {},
 
         // Merchanton
