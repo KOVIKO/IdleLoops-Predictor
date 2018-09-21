@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         IdleLoops Predictor SerVamP
 // @namespace    https://github.com/SerVamP/
-// @version      1.5
+// @version      1.5.1
 // @description  Predicts the amount of resources spent and gained by each action in the action list. Valid as of IdleLoops v.76/Omsi6.
 // @author       Koviko <koviko.net@gmail.com>
 // @match        *omsi6.github.io/loops/*
@@ -383,6 +383,7 @@ const Koviko = {
       ul.koviko .crafts{color:#777777}
       ul.koviko .adventures{color:#191919}
       ul.koviko .ritual{color:#ff1493}
+      ul.koviko .blood{color:#8b0000}
       `;
 
       // Create the <style> element if it doesn't already exist
@@ -454,7 +455,7 @@ const Koviko = {
          * @return {number} Combat skill of the team leader
          * @memberof Koviko.Predictor#helpers
          */
-        getSelfCombat: (r, k) => g.getSkillLevelFromExp(k.combat) * (1 + ((r.armor || 0) * h.getGuildRankBonus(r.crafts || 0)) / 5),
+        getSelfCombat: (r, k) => g.getSkillLevelFromExp(k.combat) + g.getSkillLevelFromExp(k.pyromancy) * 10 + (1 + ((r.armor || 0) * h.getGuildRankBonus(r.crafts || 0)) / 5),
 
         /**
          * Calculate the combat skill of the entire team
@@ -540,7 +541,8 @@ const Koviko = {
         }},
         'Train Dex': {},
         'Train Speed': {},
-        'Clear Thicket': {},
+        'Follow Flowers': {},
+        'Clear Thicket': { affected: ['rep'], effect: r => r.rep-- },
         'Talk To Witch': {},
         'Dark Magic': { effect: (r, k) => k.dark += 100 },
         'Continue On': {},
@@ -577,8 +579,10 @@ const Koviko = {
           r.mana += r.temp9 <= towns[3].goodGeysers ? 5000 : 0;
         }},
         'Decipher Runes': {},
-        'Explore Cavern': {},
         'Chronomancy': { effect: (r, k) => k.chronomancy += 100 },
+        'Explore Cavern': {},
+        'Mine Soulstones': { affected: ['soul'], effect: r => r.soul++ },
+        'Pyromancy': { effect: (r, k) => k.pyromancy += 100 },
 
         // Basic loops
         'Heal The Sick': { affected: ['rep'], loop: {
@@ -588,7 +592,7 @@ const Koviko = {
         }},
         'Fight Monsters': { affected: ['gold'], loop: {
           cost: (p, a) => segment => g.fibonacci(Math.floor((p.completed + segment) - p.completed / a.segments + .0000001)) * 10000,
-          tick: (p, a, s, k) => offset => g.getSkillLevelFromExp(k.combat) * Math.sqrt(1 + p.total / 100) * (1 + g.getLevelFromExp(s[a.loopStats[(p.completed + offset) % a.loopStats.length]]) / 100),
+          tick: (p, a, s, k, r) => offset => h.getSelfCombat(r, k) * Math.sqrt(1 + p.total / 100) * (1 + g.getLevelFromExp(s[a.loopStats[(p.completed + offset) % a.loopStats.length]]) / 100),
           effect: { segment: r => r.gold += 20 },
         }},
         'Adventure Guild': { affected: ['gold', 'adventures'], loop: {
@@ -612,16 +616,21 @@ const Koviko = {
           tick: (p, a, s, k) => offset => (g.getSkillLevelFromExp(k.dark) * (1 + g.getLevelFromExp(s[a.loopStats[(p.completed + offset) % a.loopStats.length]]) / 100)),
           effect: { loop: r => r.ritual++ }
         }},
+        'Hunt Trolls': { affected: ['blood'], loop: {
+          cost: (p, a) => segment => g.precision3(Math.pow(2, Math.floor((p.completed + segment) / a.segments+.0000001)) * 1e6),
+          tick: (p, a, s, k) => offset => (h.getSelfCombat() * (1 + g.getLevel(s[a.loopStats[(p.completed + offset) % a.loopStats.length]])/100) * Math.sqrt(1 + p.completed/100)),
+          effect: { loop: (r, k) => (r.blood++, k.combat += 1000) }
+        }},
 
         // Dungeon-style loops
         'Small Dungeon': { affected: ['soul'], loop: {
           max: a => g.dungeons[a.dungeonNum].length,
           cost: (p, a) => segment => g.precision3(Math.pow(2, Math.floor((p.completed + segment) / a.segments + .0000001)) * 15000),
-          tick: (p, a, s, k) => offset => {
+          tick: (p, a, s, k, r) => offset => {
             let floor = Math.floor(p.completed / a.segments + .0000001);
 
             return floor in g.dungeons[a.dungeonNum]
-              ? (g.getSkillLevelFromExp(k.combat) + g.getSkillLevelFromExp(k.magic))
+              ? (h.getSelfCombat(r, k) + g.getSkillLevelFromExp(k.magic))
                 * (1 + g.getLevelFromExp(s[a.loopStats[(p.completed + offset) % a.loopStats.length]]) / 100)
                 * Math.sqrt(1 + g.dungeons[a.dungeonNum][floor].completed / 200)
               : 0;
