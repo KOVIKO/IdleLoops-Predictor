@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         IdleLoops Predictor SerVamP
 // @namespace    https://github.com/SerVamP/
-// @version      1.5.3
+// @version      1.5.4
 // @description  Predicts the amount of resources spent and gained by each action in the action list. Valid as of IdleLoops v.78/Omsi6.
 // @author       Koviko <koviko.net@gmail.com>
 // @match        *omsi6.github.io/loops/*
@@ -812,6 +812,17 @@ const Koviko = {
             end: Koviko.globals.getLevelFromExp(stats[i].value),
           };
 
+          tooltip += '<tr><td><b>' + _txt(`stats>${i}>short_form`).toUpperCase() + '</b></td><td>' + level.end + '</td><td>(+' + (level.end - level.start) + ')</td></tr>';
+        }
+      }
+
+      for (let i in skills) {
+        if (skills[i].delta) {
+          let level = {
+            start: Koviko.globals.getSkillLevelFromExp(skills[i].value - skills[i].delta),
+            end: Koviko.globals.getSkillLevelFromExp(skills[i].value),
+          };
+
           tooltip += '<tr><td><b>'
           switch(i) {
             case "chronomancy":
@@ -833,23 +844,8 @@ const Koviko = {
               tooltip += 'PRACT';
               break;
             default:
-              tooltip += _txt(`stats>${i}>short_form`).toUpperCase();
+              tooltip += i.toUpperCase();
           }
-          tooltip += '</b></td><td>' + level.end + '</td><td>(+' + (level.end - level.start) + ')</td></tr>';
-        }
-      }
-
-      for (let i in skills) {
-        if (skills[i].delta) {
-          let level = {
-            start: Koviko.globals.getSkillLevelFromExp(skills[i].value - skills[i].delta),
-            end: Koviko.globals.getSkillLevelFromExp(skills[i].value),
-          };
-
-          tooltip += '<tr><td><b>' +
-            i.toUpperCase() + '</b></td><td>' +
-            level.end + '</td><td>(+' +
-            (level.end - level.start) + ')</td></tr>';
         }
       }
 
