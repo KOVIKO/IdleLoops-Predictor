@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         IdleLoops Predictor SerVamP
 // @namespace    https://github.com/SerVamP/
-// @version      1.5.1
-// @description  Predicts the amount of resources spent and gained by each action in the action list. Valid as of IdleLoops v.76/Omsi6.
+// @version      1.5.2
+// @description  Predicts the amount of resources spent and gained by each action in the action list. Valid as of IdleLoops v.78/Omsi6.
 // @author       Koviko <koviko.net@gmail.com>
 // @match        *omsi6.github.io/loops/*
 // @grant        none
@@ -380,10 +380,10 @@ const Koviko = {
       ul.koviko .herbs{color:#4caf50}
       ul.koviko .hide{color:#663300}
       ul.koviko .potions{color:#00b2ee}
+      ul.koviko .blood{color:#8b0000}
       ul.koviko .crafts{color:#777777}
       ul.koviko .adventures{color:#191919}
       ul.koviko .ritual{color:#ff1493}
-      ul.koviko .blood{color:#8b0000}
       `;
 
       // Create the <style> element if it doesn't already exist
