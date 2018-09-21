@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         IdleLoops Predictor SerVamP
 // @namespace    https://github.com/SerVamP/
-// @version      1.5.2
+// @version      1.5.3
 // @description  Predicts the amount of resources spent and gained by each action in the action list. Valid as of IdleLoops v.78/Omsi6.
 // @author       Koviko <koviko.net@gmail.com>
 // @match        *omsi6.github.io/loops/*
@@ -812,10 +812,30 @@ const Koviko = {
             end: Koviko.globals.getLevelFromExp(stats[i].value),
           };
 
-          tooltip += '<tr><td><b>' +
-            _txt(`stats>${i}>short_form`).toUpperCase() + '</b></td><td>' +
-            level.end + '</td><td>(+' +
-            (level.end - level.start) + ')</td></tr>';
+          tooltip += '<tr><td><b>'
+          switch(i) {
+            case "chronomancy":
+              tooltip += 'CRHON';
+              break;
+            case "crafting":
+              tooltip += 'CRAFT';
+              break;
+            case "pyromancy":
+              tooltip += 'PYRO';
+              break;
+            case "alchemy":
+              tooltip += 'ALCHY';
+              break;
+            case "combat":
+              tooltip += 'COMB';
+              break;
+            case "practical":
+              tooltip += 'PRACT';
+              break;
+            default:
+              tooltip += _txt(`stats>${i}>short_form`).toUpperCase();
+          }
+          tooltip += '</b></td><td>' + level.end + '</td><td>(+' + (level.end - level.start) + ')</td></tr>';
         }
       }
 
