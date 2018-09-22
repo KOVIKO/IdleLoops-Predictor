@@ -581,7 +581,10 @@ const Koviko = {
         'Decipher Runes': {},
         'Chronomancy': { effect: (r, k) => k.chronomancy += 100 },
         'Explore Cavern': {},
-        'Mine Soulstones': { affected: ['soul'], effect: r => r.soul++ },
+        'Mine Soulstones': { affected: ['soul'], effect: r => {
+          r.temp10 = (r.temp10 || 0) + 1;
+          r.soul += r.temp10 <= towns[3].goodMineSoulstones ? 1 : 0;
+        }},
         'Pyromancy': { effect: (r, k) => k.pyromancy += 100 },
 
         // Basic loops
