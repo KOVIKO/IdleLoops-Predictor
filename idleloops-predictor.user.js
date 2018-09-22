@@ -621,7 +621,7 @@ const Koviko = {
         }},
         'Hunt Trolls': { affected: ['blood'], loop: {
           cost: (p, a) => segment => g.precision3(Math.pow(2, Math.floor((p.completed + segment) / a.segments+.0000001)) * 1e6),
-          tick: (p, a, s, k) => offset => (h.getSelfCombat() * (1 + g.getLevel(s[a.loopStats[(p.completed + offset) % a.loopStats.length]])/100) * Math.sqrt(1 + p.completed/100)),
+          tick: (p, a, s, k, r) => offset => (h.getSelfCombat(r, k) * (1 + g.getLevelFromExp(s[a.loopStats[(p.completed + offset) % a.loopStats.length]])/100) * Math.sqrt(1 + p.completed/100)),
           effect: { loop: (r, k) => (r.blood++, k.combat += 1000) }
         }},
 
