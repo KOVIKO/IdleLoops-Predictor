@@ -652,7 +652,7 @@ const Koviko = {
                 * Math.sqrt(1 + g.dungeons[a.dungeonNum][floor].completed / 200)
               : 0;
           },
-          effect: { loop: r => r.soul++ }
+          effect: { loop: r => r.soul += 10 }
         }},
       };
 
