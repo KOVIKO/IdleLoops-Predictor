@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         IdleLoops Predictor SerVamP
 // @namespace    https://github.com/SerVamP/
-// @version      1.5.4
+// @version      1.5.5
 // @description  Predicts the amount of resources spent and gained by each action in the action list. Valid as of IdleLoops v.78/Omsi6.
 // @author       Koviko <koviko.net@gmail.com>
 // @match        *omsi6.github.io/loops/*
@@ -380,6 +380,7 @@ const Koviko = {
       ul.koviko .herbs{color:#4caf50}
       ul.koviko .hide{color:#663300}
       ul.koviko .potions{color:#00b2ee}
+      ul.koviko .lpoitons{color:#436ef7}
       ul.koviko .blood{color:#8b0000}
       ul.koviko .crafts{color:#777777}
       ul.koviko .adventures{color:#191919}
@@ -544,7 +545,7 @@ const Koviko = {
         'Follow Flowers': {},
         'Clear Thicket': {},
         'Talk To Witch': {},
-        'Dark Magic': { affected: ['rep'], effect: (r, k) => (r.rep--, k.dark += 100) },
+        'Dark Magic': { affected: ['rep'], effect: (r, k) => (r.rep--, k.dark += Math.floor(100 * (1 + buffs.Ritual.amt / 100))) },
         'Continue On': {},
 
         // Merchanton
@@ -586,6 +587,11 @@ const Koviko = {
           r.soul += r.temp10 <= towns[3].goodMineSoulstones ? 1 : 0;
         }},
         'Pyromancy': { effect: (r, k) => k.pyromancy += 100 },
+        'Looping Potion': { affected: ['herbs', 'lpotions'], effect: (r, k) => {
+          if ( r.herbs >= 200 ) {
+            (r.herbs -= 200, r.lpoitons++, k.alchemy += 100)
+          }
+        }},
 
         // Basic loops
         'Heal The Sick': { affected: ['rep'], loop: {
