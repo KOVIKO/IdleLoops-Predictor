@@ -803,8 +803,16 @@ const Koviko = {
       });
 
       // Update the display for the total amount of mana used by the action list
-      container && (this.totalDisplay.innerHTML = intToString(total) + " | " + (Math.ceil((totalTicks / 50) * 10) / 10) + "s");
+      totalTicks /= 50;
+      console.log(totalTicks);
+      var h = Math.floor(totalTicks / 3600);
+      var m = Math.floor(totalTicks % 3600 / 60);
+      var s = Math.floor(totalTicks % 3600 % 60);
+      var ms = Math.ceil(totalTicks % 1 * 10);
 
+      let totalTime = ('0' + h).slice(-2) + ":" + ('0' + m).slice(-2) + ":" + ('0' + s).slice(-2) + "." + ms;
+      container && (this.totalDisplay.innerHTML = intToString(total) + " | " + totalTime);
+      
       // Log useful debugging data
       if (isDebug) {
         console.info({
