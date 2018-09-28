@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         IdleLoops Predictor SerVamP
 // @namespace    https://github.com/SerVamP/
-// @version      1.5.5
+// @version      1.5.6
 // @description  Predicts the amount of resources spent and gained by each action in the action list. Valid as of IdleLoops v.78/Omsi6.
 // @author       Koviko <koviko.net@gmail.com>
 // @match        *omsi6.github.io/loops/*
@@ -510,7 +510,7 @@ const Koviko = {
             (r.rep--, r.supplyDiscount = (r.supplyDiscount >= 15 ? 15 : (r.supplyDiscount || 0) + 1))
           }
         }},
-        'Start Journey': { effect: r => r.supplies = (r.supplies || 0) - 1 },
+        'Start Journey': { effect: r => (r.supplies = (r.supplies || 0) - 1, r.town += 1) },
 
         // Forest Path
         'Explore Forest': {},
@@ -546,7 +546,7 @@ const Koviko = {
         'Clear Thicket': {},
         'Talk To Witch': {},
         'Dark Magic': { affected: ['rep'], effect: (r, k) => (r.rep--, k.dark += Math.floor(100 * (1 + buffs.Ritual.amt / 100))) },
-        'Continue On': {},
+        'Continue On': { effect: r => r.town += 1 },
 
         // Merchanton
         'Explore City': {},
@@ -571,7 +571,7 @@ const Koviko = {
         'Mason': { effect: (r, k) => (r.mason = (r.mason || 0) + 20 * h.getGuildRankBonus(r.crafts || 0), k.crafting += 20 * (1 + h.getTownLevelFromExp(r.mason) / 100)) },
         'Architect': { effect: (r, k) => (r.architect = (r.architect || 0) + 10 * h.getGuildRankBonus(r.crafts || 0), k.crafting += 40 * (1 + h.getTownLevelFromExp(r.architect) / 100)) },
         'Buy Pickaxe': { affected: ['gold'], effect: r => r.gold -= 200 },
-        'Start Trek': {},
+        'Start Trek': { effect: r => r.town += 1 },
 
         // Mt. Olympus
         'Climb Mountain': {},
@@ -687,7 +687,7 @@ const Koviko = {
        * @var {Koviko.Predictor~State}
        */
       const state = {
-        resources: { mana: 250 },
+        resources: { mana: 250, town: 0 },
         stats: Koviko.globals.statList.reduce((stats, name) => (stats[name] = 0, stats), {}),
         skills: Object.entries(Koviko.globals.skills).reduce((skills, x) => (skills[x[0].toLowerCase()] = x[1].exp, skills), {}),
         progress: {}
@@ -709,6 +709,12 @@ const Koviko = {
        * @var {number}
        */
       let total = 0;
+
+      /**
+       * Total time used for the action list
+       * @var {number}
+       */
+      let totalTicks = 0;
 
       /**
        * All affected resources of the current action list
@@ -764,6 +770,19 @@ const Koviko = {
             // Calculate the total amount of mana used in the prediction and add it to the total
             total += currentMana - state.resources.mana;
 
+            // Calculate time spent
+            let temp = (currentMana - state.resources.mana) / Math.sqrt(1 + getSkillLevel("Chronomancy") / 200);
+            if ( state.resources.town === 0 && getBuffLevel("Ritual") > 0) {
+              temp /= (1 + Math.min(getBuffLevel("Ritual"), 20) / 10);
+            }
+            else if ( state.resources.town === 1 && getBuffLevel("Ritual") > 20) {
+              temp /= (1 + Math.min(getBuffLevel("Ritual") - 20, 20) / 20);
+            }
+            else if ( state.resources.town === 2 && getBuffLevel("Ritual") > 40) {
+              temp /= (1 + Math.min(getBuffLevel("Ritual") - 40, 20) / 40);
+            }
+            totalTicks += temp;
+
             // Run the effect, now that the mana checks are complete
             if (prediction.effect) {
               prediction.effect(state.resources, state.skills);
@@ -784,7 +803,7 @@ const Koviko = {
       });
 
       // Update the display for the total amount of mana used by the action list
-      container && (this.totalDisplay.innerHTML = total);
+      container && (this.totalDisplay.innerHTML = intToString(total) + " | " + (Math.ceil((totalTicks / 50) * 10) / 10) + "s");
 
       // Log useful debugging data
       if (isDebug) {
