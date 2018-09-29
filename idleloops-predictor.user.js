@@ -808,7 +808,7 @@ const Koviko = {
       var h = Math.floor(totalTicks / 3600);
       var m = Math.floor(totalTicks % 3600 / 60);
       var s = Math.floor(totalTicks % 3600 % 60);
-      var ms = Math.ceil(totalTicks % 1 * 10);
+      var ms = Math.floor(totalTicks % 1 * 10);
 
       let totalTime = ('0' + h).slice(-2) + ":" + ('0' + m).slice(-2) + ":" + ('0' + s).slice(-2) + "." + ms;
       container && (this.totalDisplay.innerHTML = intToString(total) + " | " + totalTime);
