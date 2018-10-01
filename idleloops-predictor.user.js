@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         IdleLoops Predictor SerVamP
 // @namespace    https://github.com/SerVamP/
-// @version      1.5.6
-// @description  Predicts the amount of resources spent and gained by each action in the action list. Valid as of IdleLoops v.78/Omsi6.
+// @version      1.5.7
+// @description  Predicts the amount of resources spent and gained by each action in the action list. Valid as of IdleLoops v.80/Omsi6.
 // @author       Koviko <koviko.net@gmail.com>
 // @match        *omsi6.github.io/loops/*
 // @grant        none
