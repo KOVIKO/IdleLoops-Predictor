@@ -804,7 +804,6 @@ const Koviko = {
 
       // Update the display for the total amount of mana used by the action list
       totalTicks /= 50;
-      console.log(totalTicks);
       var h = Math.floor(totalTicks / 3600);
       var m = Math.floor(totalTicks % 3600 / 60);
       var s = Math.floor(totalTicks % 3600 % 60);
