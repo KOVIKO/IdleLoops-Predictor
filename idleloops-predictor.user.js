@@ -370,7 +370,7 @@ const Koviko = {
       #nextActionsList:hover{margin-left:-100%;padding-left:100%}
       span.koviko{font-weight:bold;color:#8293ff}
       div.koviko{top:-5px;left:auto;right:100%}
-      ul.koviko{display:inline-block;list-style:none;margin:0;padding:0;pointer-events:none}
+      ul.koviko{list-style:none;margin:0;padding:0;pointer-events:none}
       ul.koviko li{display:inline-block;margin: 0 2px;font-weight:bold;font-size:90%}
       ul.koviko.invalid li{color:#c00!important}
       ul.koviko .mana{color:#8293ff}
