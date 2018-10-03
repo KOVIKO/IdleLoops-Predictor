@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         IdleLoops Predictor SerVamP
 // @namespace    https://github.com/SerVamP/
-// @version      1.5.7
+// @version      1.5.8
 // @description  Predicts the amount of resources spent and gained by each action in the action list. Valid as of IdleLoops v.80/Omsi6.
 // @author       Koviko <koviko.net@gmail.com>
 // @match        *omsi6.github.io/loops/*
@@ -593,7 +593,7 @@ const Koviko = {
           }
         }},
 
-        // Basic loops
+        // Loops without Max
         'Heal The Sick': { affected: ['rep'], loop: {
           cost: (p, a) => segment => g.fibonacci(2 + Math.floor((p.completed + segment) / a.segments + .0000001)) * 5000,
           tick: (p, a, s, k) => offset => g.getSkillLevelFromExp(k.magic) * Math.sqrt(1 + p.total / 100) * (1 + g.getLevelFromExp(s[a.loopStats[(p.completed + offset) % a.loopStats.length]]) / 100),
@@ -607,23 +607,14 @@ const Koviko = {
         'Adventure Guild': { affected: ['gold', 'adventures'], loop: {
           cost: (p) => segment => g.precision3(Math.pow(1.2, p.completed + segment)) * 5e6,
           tick: (p, a, s, k, r) => offset => {
-            return (h.getSelfCombat(r, k) + g.getSkillLevelFromExp(k.magic) / 2)
-              * (1 + g.getLevelFromExp(s[a.loopStats[(p.completed + offset) % a.loopStats.length]]) / 100)
-              * Math.sqrt(1 + p.total / 1000);
+            return (h.getSelfCombat(r, k) + g.getSkillLevelFromExp(k.magic) / 2) * (1 + g.getLevelFromExp(s[a.loopStats[(p.completed + offset) % a.loopStats.length]]) / 100) * Math.sqrt(1 + p.total / 1000);
           },
           effect: { segment: r => (r.mana += 200, r.adventures++) }
         }},
         'Crafting Guild': { affected: ['gold', 'crafts'], loop: {
           cost: (p) => segment => g.precision3(Math.pow(1.2, p.completed + segment)) * 2e6,
-          tick: (p, a, s, k) => offset => (g.getSkillLevelFromExp(k.magic) / 2 + g.getSkillLevelFromExp(k.crafting))
-            * (1 + g.getLevelFromExp(s[a.loopStats[(p.completed + offset) % a.loopStats.length]]) / 100)
-            * Math.sqrt(1 + p.total / 1000),
+          tick: (p, a, s, k) => offset => (g.getSkillLevelFromExp(k.magic) / 2 + g.getSkillLevelFromExp(k.crafting)) * (1 + g.getLevelFromExp(s[a.loopStats[(p.completed + offset) % a.loopStats.length]]) / 100) * Math.sqrt(1 + p.total / 1000),
           effect: { segment: (r, k) => (r.gold += 10, r.crafts++, k.crafting += 50) }
-        }},
-        'Dark Ritual': { affected: ['ritual'], loop: {
-          cost: p => segment => 1000000 * (segment * 2 + 1),
-          tick: (p, a, s, k) => offset => (g.getSkillLevelFromExp(k.dark) * (1 + g.getLevelFromExp(s[a.loopStats[(p.completed + offset) % a.loopStats.length]]) / 100)),
-          effect: { loop: r => r.ritual++ }
         }},
         'Hunt Trolls': { affected: ['blood'], loop: {
           cost: (p, a) => segment => g.precision3(Math.pow(2, Math.floor((p.completed + segment) / a.segments+.0000001)) * 1e6),
@@ -631,34 +622,36 @@ const Koviko = {
           effect: { loop: (r, k) => (r.blood++, k.combat += 1000) }
         }},
 
-        // Dungeon-style loops
+        // Loops with Max
         'Small Dungeon': { affected: ['soul'], loop: {
-          max: a => g.dungeons[a.dungeonNum].length,
+          max: (a) => g.dungeons[a.dungeonNum].length,
           cost: (p, a) => segment => g.precision3(Math.pow(2, Math.floor((p.completed + segment) / a.segments + .0000001)) * 15000),
           tick: (p, a, s, k, r) => offset => {
             let floor = Math.floor(p.completed / a.segments + .0000001);
 
-            return floor in g.dungeons[a.dungeonNum]
-              ? (h.getSelfCombat(r, k) + g.getSkillLevelFromExp(k.magic))
-                * (1 + g.getLevelFromExp(s[a.loopStats[(p.completed + offset) % a.loopStats.length]]) / 100)
-                * Math.sqrt(1 + g.dungeons[a.dungeonNum][floor].completed / 200)
-              : 0;
+            return floor in g.dungeons[a.dungeonNum] ? (h.getSelfCombat(r, k) + g.getSkillLevelFromExp(k.magic)) * (1 + g.getLevelFromExp(s[a.loopStats[(p.completed + offset) % a.loopStats.length]]) / 100) * Math.sqrt(1 + g.dungeons[a.dungeonNum][floor].completed / 200) : 0;
           },
           effect: { loop: r => r.soul++ },
         }},
         'Large Dungeon': { affected: ['soul'], loop: {
-          max: a => g.dungeons[a.dungeonNum].length,
+          max: (a) => g.dungeons[a.dungeonNum].length,
           cost: (p, a) => segment => g.precision3(Math.pow(3, Math.floor((p.completed + segment) / a.segments + .0000001)) * 5e5),
           tick: (p, a, s, k, r) => offset => {
             let floor = Math.floor(p.completed / a.segments + .0000001);
 
-            return floor in g.dungeons[a.dungeonNum]
-              ? (h.getTeamCombat(r, k) + g.getSkillLevelFromExp(k.magic))
-                * (1 + g.getLevelFromExp(s[a.loopStats[(p.completed + offset) % a.loopStats.length]]) / 100)
-                * Math.sqrt(1 + g.dungeons[a.dungeonNum][floor].completed / 200)
-              : 0;
+            return floor in g.dungeons[a.dungeonNum] ? (h.getTeamCombat(r, k) + g.getSkillLevelFromExp(k.magic)) * (1 + g.getLevelFromExp(s[a.loopStats[(p.completed + offset) % a.loopStats.length]]) / 100) * Math.sqrt(1 + g.dungeons[a.dungeonNum][floor].completed / 200) : 0;
           },
           effect: { loop: r => r.soul += 10 }
+        }},
+        'Dark Ritual': { affected: ['ritual'], loop: {
+          max: () => 1,
+          cost: (p) => segment => 1000000 * (segment * 2 + 1),
+          tick: (p, a, s, k) => offset => {
+            let attempt = Math.floor(p.completed / a.segments + .0000001);
+            
+            return attempt < 1 ? (g.getSkillLevelFromExp(k.dark) * (1 + g.getLevelFromExp(s[a.loopStats[(p.completed + offset) % a.loopStats.length]]) / 100)) : 0;
+          },
+          effect: { loop: r => r.ritual++ }
         }},
       };
 
