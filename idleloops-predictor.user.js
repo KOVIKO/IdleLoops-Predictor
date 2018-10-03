@@ -648,7 +648,7 @@ const Koviko = {
           cost: (p) => segment => 1000000 * (segment * 2 + 1),
           tick: (p, a, s, k) => offset => {
             let attempt = Math.floor(p.completed / a.segments + .0000001);
-            
+
             return attempt < 1 ? (g.getSkillLevelFromExp(k.dark) * (1 + g.getLevelFromExp(s[a.loopStats[(p.completed + offset) % a.loopStats.length]]) / 100)) : 0;
           },
           effect: { loop: (r) => r.ritual++ }
@@ -804,7 +804,7 @@ const Koviko = {
 
       let totalTime = ('0' + h).slice(-2) + ":" + ('0' + m).slice(-2) + ":" + ('0' + s).slice(-2) + "." + ms;
       container && (this.totalDisplay.innerHTML = intToString(total) + " | " + totalTime);
-      
+
       // Log useful debugging data
       if (isDebug) {
         console.info({
