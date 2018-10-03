@@ -760,8 +760,18 @@ const Koviko = {
             // Check if the amount of mana used was too much
             isValid = isValid && state.resources.mana >= 0;
 
+            // Only for Adventure Guild
+            if ( listedAction.name == "Adventure Guild" ) {
+              state.resources.mana -= state.resources.adventures * 200;
+            }
+
             // Calculate the total amount of mana used in the prediction and add it to the total
             total += currentMana - state.resources.mana;
+
+            // Only for Adventure Guild
+            if ( listedAction.name == "Adventure Guild" ) {
+              state.resources.mana += state.resources.adventures * 200;
+            }
 
             // Calculate time spent
             let temp = (currentMana - state.resources.mana) / Math.sqrt(1 + getSkillLevel("Chronomancy") / 200);
