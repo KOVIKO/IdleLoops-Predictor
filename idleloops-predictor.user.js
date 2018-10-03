@@ -439,7 +439,7 @@ const Koviko = {
          * @return {number} Current level of town attribute
          * @memberof Koviko.Predictor#helpers
          */
-        getTownLevelFromExp: exp => Math.floor((Math.sqrt(8 * exp / 100 + 1) - 1) / 2),
+        getTownLevelFromExp: (exp) => Math.floor((Math.sqrt(8 * exp / 100 + 1) - 1) / 2),
 
         /**
          * Get the current guild rank's bonus, noting that there is a max of 15 ranks, base zero.
@@ -479,57 +479,57 @@ const Koviko = {
       const predictions = {
         // Beginnersville
         'Wander': {},
-        'Smash Pots': { affected: ['mana'], effect: r => {
+        'Smash Pots': { affected: ['mana'], effect: (r) => {
           r.temp1 = (r.temp1 || 0) + 1;
           r.mana += r.temp1 <= towns[0].goodPots ? g.goldCostSmashPots() : 0;
         }},
-        'Pick Locks': { affected: ['gold'], effect: r => {
+        'Pick Locks': { affected: ['gold'], effect: (r) => {
           r.temp2 = (r.temp2 || 0) + 1;
           r.gold += r.temp2 <= towns[0].goodLocks ? g.goldCostLocks() : 0;
         }},
-        'Buy Glasses': { effect: r => (r.gold -= 10, r.glasses = true) },
-        'Buy Mana': { affected: ['mana', 'gold'], effect: r => (r.mana += r.gold * 50, r.gold = 0) },
+        'Buy Glasses': { effect: (r) => (r.gold -= 10, r.glasses = true) },
+        'Buy Mana': { affected: ['mana', 'gold'], effect: (r) => (r.mana += r.gold * 50, r.gold = 0) },
         'Meet People': {},
         'Train Strength': {},
-        'Short Quest': { affected: ['gold'], effect: r => {
+        'Short Quest': { affected: ['gold'], effect: (r) => {
           r.temp3 = (r.temp3 || 0) + 1;
           r.gold += r.temp3 <= towns[0].goodSQuests ? g.goldCostSQuests() : 0;
         }},
         'Investigate': {},
-        'Long Quest': { affected: ['gold', 'rep'], effect: r => {
+        'Long Quest': { affected: ['gold', 'rep'], effect: (r) => {
           r.temp4 = (r.temp4 || 0) + 1;
           r.gold += r.temp4 <= towns[0].goodLQuests ? g.goldCostLQuests() : 0;
           r.rep += r.temp4 <= towns[0].goodLQuests ? 1 : 0;
         }},
-        'Throw Party': { affected: ['rep'], effect: r => r.rep -= 2 },
+        'Throw Party': { affected: ['rep'], effect: (r) => r.rep -= 2 },
         'Warrior Lessons': { effect: (r, k) => k.combat += 100 },
         'Mage Lessons': { effect: (r, k) => k.magic += 100 * (1 + g.getSkillLevelFromExp(k.alchemy) / 100) },
-        'Buy Supplies': { affected: ['gold'], effect: r => (r.gold -= 300 - Math.max((r.supplyDiscount || 0) * 20, 0), r.supplies = (r.supplies || 0) + 1) },
-        'Haggle': { effect: r => {
+        'Buy Supplies': { affected: ['gold'], effect: (r) => (r.gold -= 300 - Math.max((r.supplyDiscount || 0) * 20, 0), r.supplies = (r.supplies || 0) + 1) },
+        'Haggle': { effect: (r) => {
           if ( r.rep > 0 ) {
             (r.rep--, r.supplyDiscount = (r.supplyDiscount >= 15 ? 15 : (r.supplyDiscount || 0) + 1))
           }
         }},
-        'Start Journey': { effect: r => (r.supplies = (r.supplies || 0) - 1, r.town += 1) },
+        'Start Journey': { effect: (r) => (r.supplies = (r.supplies || 0) - 1, r.town += 1) },
 
         // Forest Path
         'Explore Forest': {},
-        'Wild Mana': { affected: ['mana'], effect: r => {
+        'Wild Mana': { affected: ['mana'], effect: (r) => {
           r.temp5 = (r.temp5 || 0) + 1;
           r.mana += r.temp5 <= towns[1].goodWildMana ? g.goldCostWildMana() : 0;
         }},
-        'Gather Herbs': { affected: ['herbs'], effect: r => {
+        'Gather Herbs': { affected: ['herbs'], effect: (r) => {
           r.temp6 = (r.temp6 || 0) + 1;
           r.herbs += r.temp6 <= towns[1].goodHerbs ? 1 : 0;
         }},
-        'Hunt': { affected: ['hide'], effect: r => {
+        'Hunt': { affected: ['hide'], effect: (r) => {
           r.temp7 = (r.temp7 || 0) + 1;
           r.hide += r.temp7 <= towns[1].goodHunt ? 1 : 0;
         }},
         'Sit By Waterfall': {},
         'Old Shortcut': {},
         'Talk To Hermit': {},
-        'Practical Magic': { effect: (r, k) => k.practical += 100 },
+        'Practical Magic': { effect: (k) => k.practical += 100 },
         'Learn Alchemy': { affected: ['herbs'], effect: (r, k) => {
           if ( r.herbs >= 10 ) {
             (r.herbs -= 10, k.alchemy += 50, k.magic += 50)
@@ -546,47 +546,47 @@ const Koviko = {
         'Clear Thicket': {},
         'Talk To Witch': {},
         'Dark Magic': { affected: ['rep'], effect: (r, k) => (r.rep--, k.dark += Math.floor(100 * (1 + buffs.Ritual.amt / 100))) },
-        'Continue On': { effect: r => r.town += 1 },
+        'Continue On': { effect: (r) => r.town += 1 },
 
         // Merchanton
         'Explore City': {},
-        'Gamble': { affected: ['gold', 'rep'], effect: r => {
+        'Gamble': { affected: ['gold', 'rep'], effect: (r) => {
           if ( r.rep >= -5 ) {
             r.temp8 = (r.temp8 || 0) + 1;
             r.gold += r.temp8 <= towns[2].goodGamble ? 40 : 0;
             r.rep -= r.temp8 <= towns[2].goodGamble ? 1 : 0;
           }
         }},
-        'Get Drunk': { affected: ['rep'], effect: r => {
+        'Get Drunk': { affected: ['rep'], effect: (r) => {
           if ( r.rep >= -3 ) {
             r.rep--
           }
         }},
-        'Purchase Mana': { affected: ['mana', 'gold'], effect: r => (r.mana += r.gold * 50, r.gold = 0) },
+        'Purchase Mana': { affected: ['mana', 'gold'], effect: (r) => (r.mana += r.gold * 50, r.gold = 0) },
         'Sell Potions': { affected: ['gold', 'potions'], effect: (r, k) => (r.gold += r.potions * g.getSkillLevelFromExp(k.alchemy), r.potions = 0) },
         'Read Books': {},
-        'Gather Team': { affected: ['gold'], effect: r => (r.team = (r.team || 0) + 1, r.gold -= r.team * 200) },
-        'Craft Armor': { affected: ['hide'], effect: r => (r.hide -= 2, r.armor = (r.armor || 0) + 1) },
+        'Gather Team': { affected: ['gold'], effect: (r) => (r.team = (r.team || 0) + 1, r.gold -= r.team * 200) },
+        'Craft Armor': { affected: ['hide'], effect: (r) => (r.hide -= 2, r.armor = (r.armor || 0) + 1) },
         'Apprentice': { effect: (r, k) => (r.apprentice = (r.apprentice || 0) + 30 * h.getGuildRankBonus(r.crafts || 0), k.crafting += 10 * (1 + h.getTownLevelFromExp(r.apprentice) / 100)) },
         'Mason': { effect: (r, k) => (r.mason = (r.mason || 0) + 20 * h.getGuildRankBonus(r.crafts || 0), k.crafting += 20 * (1 + h.getTownLevelFromExp(r.mason) / 100)) },
         'Architect': { effect: (r, k) => (r.architect = (r.architect || 0) + 10 * h.getGuildRankBonus(r.crafts || 0), k.crafting += 40 * (1 + h.getTownLevelFromExp(r.architect) / 100)) },
-        'Buy Pickaxe': { affected: ['gold'], effect: r => r.gold -= 200 },
-        'Start Trek': { effect: r => r.town += 1 },
+        'Buy Pickaxe': { affected: ['gold'], effect: (r) => r.gold -= 200 },
+        'Start Trek': { effect: (r) => r.town += 1 },
 
         // Mt. Olympus
         'Climb Mountain': {},
-        'Mana Geyser': { affected: ['mana'], effect: r => {
+        'Mana Geyser': { affected: ['mana'], effect: (r) => {
           r.temp9 = (r.temp9 || 0) + 1;
           r.mana += r.temp9 <= towns[3].goodGeysers ? 5000 : 0;
         }},
         'Decipher Runes': {},
         'Chronomancy': { effect: (r, k) => k.chronomancy += 100 },
         'Explore Cavern': {},
-        'Mine Soulstones': { affected: ['soul'], effect: r => {
+        'Mine Soulstones': { affected: ['soul'], effect: (r) => {
           r.temp10 = (r.temp10 || 0) + 1;
           r.soul += r.temp10 <= towns[3].goodMineSoulstones ? 1 : 0;
         }},
-        'Pyromancy': { effect: (r, k) => k.pyromancy += 100 },
+        'Pyromancy': { effect: (k) => k.pyromancy += 100 },
         'Looping Potion': { affected: ['herbs', 'lpotions'], effect: (r, k) => {
           if ( r.herbs >= 200 ) {
             (r.herbs -= 200, r.lpoitons++, k.alchemy += 100)
@@ -597,19 +597,19 @@ const Koviko = {
         'Heal The Sick': { affected: ['rep'], loop: {
           cost: (p, a) => segment => g.fibonacci(2 + Math.floor((p.completed + segment) / a.segments + .0000001)) * 5000,
           tick: (p, a, s, k) => offset => g.getSkillLevelFromExp(k.magic) * Math.sqrt(1 + p.total / 100) * (1 + g.getLevelFromExp(s[a.loopStats[(p.completed + offset) % a.loopStats.length]]) / 100),
-          effect: { loop: r => r.rep += 3 },
+          effect: { loop: (r) => r.rep += 3 },
         }},
         'Fight Monsters': { affected: ['gold'], loop: {
           cost: (p, a) => segment => g.fibonacci(Math.floor((p.completed + segment) - p.completed / a.segments + .0000001)) * 10000,
           tick: (p, a, s, k, r) => offset => h.getSelfCombat(r, k) * Math.sqrt(1 + p.total / 100) * (1 + g.getLevelFromExp(s[a.loopStats[(p.completed + offset) % a.loopStats.length]]) / 100),
-          effect: { segment: r => r.gold += 20 },
+          effect: { segment: (r) => r.gold += 20 },
         }},
         'Adventure Guild': { affected: ['gold', 'adventures'], loop: {
           cost: (p) => segment => g.precision3(Math.pow(1.2, p.completed + segment)) * 5e6,
           tick: (p, a, s, k, r) => offset => {
             return (h.getSelfCombat(r, k) + g.getSkillLevelFromExp(k.magic) / 2) * (1 + g.getLevelFromExp(s[a.loopStats[(p.completed + offset) % a.loopStats.length]]) / 100) * Math.sqrt(1 + p.total / 1000);
           },
-          effect: { segment: r => (r.mana += 200, r.adventures++) }
+          effect: { segment: (r) => (r.mana += 200, r.adventures++) }
         }},
         'Crafting Guild': { affected: ['gold', 'crafts'], loop: {
           cost: (p) => segment => g.precision3(Math.pow(1.2, p.completed + segment)) * 2e6,
@@ -631,7 +631,7 @@ const Koviko = {
 
             return floor in g.dungeons[a.dungeonNum] ? (h.getSelfCombat(r, k) + g.getSkillLevelFromExp(k.magic)) * (1 + g.getLevelFromExp(s[a.loopStats[(p.completed + offset) % a.loopStats.length]]) / 100) * Math.sqrt(1 + g.dungeons[a.dungeonNum][floor].completed / 200) : 0;
           },
-          effect: { loop: r => r.soul++ },
+          effect: { loop: (r) => r.soul++ },
         }},
         'Large Dungeon': { affected: ['soul'], loop: {
           max: (a) => g.dungeons[a.dungeonNum].length,
@@ -641,7 +641,7 @@ const Koviko = {
 
             return floor in g.dungeons[a.dungeonNum] ? (h.getTeamCombat(r, k) + g.getSkillLevelFromExp(k.magic)) * (1 + g.getLevelFromExp(s[a.loopStats[(p.completed + offset) % a.loopStats.length]]) / 100) * Math.sqrt(1 + g.dungeons[a.dungeonNum][floor].completed / 200) : 0;
           },
-          effect: { loop: r => r.soul += 10 }
+          effect: { loop: (r) => r.soul += 10 }
         }},
         'Dark Ritual': { affected: ['ritual'], loop: {
           max: () => 1,
@@ -651,7 +651,7 @@ const Koviko = {
             
             return attempt < 1 ? (g.getSkillLevelFromExp(k.dark) * (1 + g.getLevelFromExp(s[a.loopStats[(p.completed + offset) % a.loopStats.length]]) / 100)) : 0;
           },
-          effect: { loop: r => r.ritual++ }
+          effect: { loop: (r) => r.ritual++ }
         }},
       };
 
