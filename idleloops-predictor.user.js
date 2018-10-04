@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         IdleLoops Predictor SerVamP
 // @namespace    https://github.com/SerVamP/
-// @version      1.5.8
-// @description  Predicts the amount of resources spent and gained by each action in the action list. Valid as of IdleLoops v.80/Omsi6.
+// @version      1.5.9
+// @description  Predicts the amount of resources spent and gained by each action in the action list. Valid as of IdleLoops v.81/Omsi6.
 // @author       Koviko <koviko.net@gmail.com>
 // @match        *omsi6.github.io/loops/*
 // @grant        none
@@ -543,6 +543,7 @@ const Koviko = {
         'Train Dex': {},
         'Train Speed': {},
         'Follow Flowers': {},
+        'Bird Watching': {},
         'Clear Thicket': {},
         'Talk To Witch': {},
         'Dark Magic': { affected: ['rep'], effect: (r, k) => (r.rep--, k.dark += Math.floor(100 * (1 + buffs.Ritual.amt / 100))) },
