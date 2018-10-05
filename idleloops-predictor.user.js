@@ -529,7 +529,7 @@ const Koviko = {
         'Sit By Waterfall': {},
         'Old Shortcut': {},
         'Talk To Hermit': {},
-        'Practical Magic': { effect: (k) => k.practical += 100 },
+        'Practical Magic': { effect: (r, k) => k.practical += 100 },
         'Learn Alchemy': { affected: ['herbs'], effect: (r, k) => {
           if ( r.herbs >= 10 ) {
             (r.herbs -= 10, k.alchemy += 50, k.magic += 50)
@@ -587,7 +587,7 @@ const Koviko = {
           r.temp10 = (r.temp10 || 0) + 1;
           r.soul += r.temp10 <= towns[3].goodMineSoulstones ? 1 : 0;
         }},
-        'Pyromancy': { effect: (k) => k.pyromancy += 100 },
+        'Pyromancy': { effect: (r, k) => k.pyromancy += 100 },
         'Looping Potion': { affected: ['herbs', 'lpotions'], effect: (r, k) => {
           if ( r.herbs >= 200 ) {
             (r.herbs -= 200, r.lpoitons++, k.alchemy += 100)
