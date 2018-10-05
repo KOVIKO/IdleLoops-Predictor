@@ -865,22 +865,22 @@ const Koviko = {
           tooltip += '<tr><td><b>'
           switch(i) {
             case "chronomancy":
-              tooltip += 'CRHO';
+              tooltip += 'chro';
               break;
             case "crafting":
-              tooltip += 'CRAFT';
+              tooltip += 'craft';
               break;
             case "pyromancy":
-              tooltip += 'PYRO';
+              tooltip += 'pyro';
               break;
             case "alchemy":
-              tooltip += 'ALCH';
+              tooltip += 'alch';
               break;
             case "combat":
-              tooltip += 'COMB';
+              tooltip += 'comb';
               break;
             case "practical":
-              tooltip += 'PRACT';
+              tooltip += 'pract';
               break;
             default:
               tooltip += i.toUpperCase();
