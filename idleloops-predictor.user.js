@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         IdleLoops Predictor SerVamP
 // @namespace    https://github.com/SerVamP/
-// @version      1.5.9
-// @description  Predicts the amount of resources spent and gained by each action in the action list. Valid as of IdleLoops v.81/Omsi6.
+// @version      1.6.0
+// @description  Predicts the amount of resources spent and gained by each action in the action list. Valid as of IdleLoops v.82/Omsi6.
 // @author       Koviko <koviko.net@gmail.com>
 // @match        *omsi6.github.io/loops/*
 // @grant        none
@@ -593,6 +593,7 @@ const Koviko = {
             (r.herbs -= 200, r.lpoitons++, k.alchemy += 100)
           }
         }},
+        'Face Judgement': { effect: (r) => r.town += 1 },
 
         // Loops without Max
         'Heal The Sick': { affected: ['rep'], loop: {
@@ -650,7 +651,7 @@ const Koviko = {
           tick: (p, a, s, k) => offset => {
             let attempt = Math.floor(p.completed / a.segments + .0000001);
 
-            return attempt < 1 ? (g.getSkillLevelFromExp(k.dark) * (1 + g.getLevelFromExp(s[a.loopStats[(p.completed + offset) % a.loopStats.length]]) / 100)) : 0;
+            return attempt < 1 ? (g.getSkillLevelFromExp(k.dark) * (1 + g.getLevelFromExp(s[a.loopStats[(p.completed + offset) % a.loopStats.length]]) / 100)) / (1 - towns[1].getLevel("Witch") * .005) : 0;
           },
           effect: { loop: (r) => r.ritual++ }
         }},
