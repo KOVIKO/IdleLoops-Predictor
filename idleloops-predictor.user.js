@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         IdleLoops Predictor
 // @namespace    https://github.com/Koviko/
-// @version      1.3.5
+// @version      1.3.6
 // @description  Predicts the amount of resources spent and gained by each action in the action list. Valid as of IdleLoops v.77.
 // @author       Koviko <koviko.net@gmail.com>
 // @website      http://koviko.net/
@@ -485,7 +485,7 @@ const Koviko = {
         'Throw Party': { affected: ['rep'], effect: r => r.rep -= 2 },
         'Warrior Lessons': { effect: (r, k) => k.combat += 100 },
         'Mage Lessons': { effect: (r, k) => k.magic += 100 * (1 + g.getSkillLevelFromExp(k.alchemy) / 100) },
-        'Buy Supplies': { affected: ['gold'], effect: r => (r.gold -= 300 - Math.max((r.supplyDiscount || 0) * 20, 0), r.supplies = (r.supplies || 0) + 1) },
+        'Buy Supplies': { affected: ['gold'], effect: r => (r.gold -= Math.max(300 - Math.max((r.supplyDiscount || 0) * 20, 0), 0), r.supplies = (r.supplies || 0) + 1) },
         'Haggle': { effect: r => (r.rep--, r.supplyDiscount = (r.supplyDiscount || 0) + 1) },
         'Start Journey': { effect: r => r.supplies = (r.supplies || 0) - 1 },
 
