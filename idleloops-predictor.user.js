@@ -368,6 +368,7 @@ const Koviko = {
       #expandableList{overflow:hidden}
       #nextActionsList{height:100%!important}
       #nextActionsList:hover{margin-left:-100%;padding-left:100%}
+      #actionList>div:nth-child(2){left: 53px !important}
       span.koviko{font-weight:bold;color:#8293ff}
       div.koviko{top:-5px;left:auto;right:100%}
       ul.koviko{list-style:none;margin:0;padding:0;pointer-events:none}
