@@ -608,9 +608,7 @@ const Koviko = {
         }},
         'Adventure Guild': { affected: ['gold', 'adventures'], loop: {
           cost: (p) => segment => g.precision3(Math.pow(1.2, p.completed + segment)) * 5e6,
-          tick: (p, a, s, k, r) => offset => {
-            return (h.getSelfCombat(r, k) + g.getSkillLevelFromExp(k.magic) / 2) * (1 + g.getLevelFromExp(s[a.loopStats[(p.completed + offset) % a.loopStats.length]]) / 100) * Math.sqrt(1 + p.total / 1000);
-          },
+          tick: (p, a, s, k, r) => offset => (h.selfCombat(r, k) + g.getSkillLevelFromExp(k.magic) / 2) * (1 + g.getLevelFromExp(s[a.loopStats[(p.completed + offset) % a.loopStats.length]]) / 100) * Math.sqrt(1 + p.total / 1000),
           effect: { segment: (r) => (r.mana += 200, r.adventures++) }
         }},
         'Crafting Guild': { affected: ['gold', 'crafts'], loop: {
