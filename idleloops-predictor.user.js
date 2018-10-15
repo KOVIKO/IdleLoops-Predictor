@@ -861,7 +861,7 @@ const Koviko = {
             end: Koviko.globals.getLevelFromExp(stats[i].value),
           };
 
-          tooltip += '<tr><td><b>' + _txt(`stats>${i}>short_form`).toUpperCase() + '</b></td><td>' + level.end + '</td><td>(+' + (level.end - level.start) + ')</td></tr>';
+          tooltip += '<tr><td><b>' + _txt(`stats>${i}>short_form`).toUpperCase() + '</b></td><td>' + intToString(level.end, 1) + '</td><td>(+' + intToString(level.end - level.start, 1) + ')</td></tr>';
         }
       }
 
@@ -895,7 +895,7 @@ const Koviko = {
             default:
               tooltip += i.toUpperCase();
           }
-          tooltip += '</b></td><td>' + level.end + '</td><td>(+' + (level.end - level.start) + ')</td></tr>';
+          tooltip += '</b></td><td>' + intToString(level.end, 1) + '</td><td>(+' + intToString(level.end - level.start, 1) + ')</td></tr>';
         }
       }
 
