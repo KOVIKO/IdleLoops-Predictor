@@ -160,6 +160,8 @@ const Koviko = {
        * @member {Koviko.Prediction~Loop|null}
        */
       this.loop = params.loop || null;
+
+      this.canStart = params.canStart || true;
     }
 
     /**
@@ -506,7 +508,12 @@ const Koviko = {
         'Warrior Lessons': { effect: (r, k) => k.combat += 100 },
         'Mage Lessons': { effect: (r, k) => k.magic += 100 * (1 + g.getSkillLevelFromExp(k.alchemy) / 100) },
         'Buy Supplies': { affected: ['gold'], effect: (r) => (r.gold -= 300 - Math.max((r.supplyDiscount || 0) * 20, 0), r.supplies = (r.supplies || 0) + 1) },
-        'Haggle': { effect: (r) => {
+        'Haggle': { affected: ['rep'], canStart: (input) => {
+            if ( input > 0 ) {
+              return true;
+            }
+            return false;
+        }, effect: (r) => {
           if ( r.rep > 0 ) {
             (r.rep--, r.supplyDiscount = (r.supplyDiscount >= 15 ? 15 : (r.supplyDiscount || 0) + 1))
           }
@@ -752,6 +759,9 @@ const Koviko = {
 
           // Predict each loop in sequence
           for (let loop = 0; loop < listedAction.loops; loop++) {
+            let canStart = typeof(prediction.canStart) === "function" ? prediction.canStart(state.resources.rep) : prediction.canStart;
+            if ( !canStart ) break;
+
             // Save the mana prior to the prediction
             currentMana = state.resources.mana;
 
