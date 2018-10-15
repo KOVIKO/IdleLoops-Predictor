@@ -509,7 +509,7 @@ const Koviko = {
         'Mage Lessons': { effect: (r, k) => k.magic += 100 * (1 + g.getSkillLevelFromExp(k.alchemy) / 100) },
         'Buy Supplies': { affected: ['gold'], effect: (r) => (r.gold -= 300 - Math.max((r.supplyDiscount || 0) * 20, 0), r.supplies = (r.supplies || 0) + 1) },
         'Haggle': { affected: ['rep'], canStart: (input) => {
-            if ( input > 0 ) {
+            if ( input.rep > 0 ) {
               return true;
             }
             return false;
@@ -759,7 +759,7 @@ const Koviko = {
 
           // Predict each loop in sequence
           for (let loop = 0; loop < listedAction.loops; loop++) {
-            let canStart = typeof(prediction.canStart) === "function" ? prediction.canStart(state.resources.rep) : prediction.canStart;
+            let canStart = typeof(prediction.canStart) === "function" ? prediction.canStart(state.resources) : prediction.canStart;
             if ( !canStart ) break;
 
             // Save the mana prior to the prediction
