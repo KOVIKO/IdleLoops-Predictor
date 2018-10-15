@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         IdleLoops Predictor SerVamP
 // @namespace    https://github.com/SerVamP/
-// @version      1.6.0
-// @description  Predicts the amount of resources spent and gained by each action in the action list. Valid as of IdleLoops v.82/Omsi6.
+// @version      1.6.1
+// @description  Predicts the amount of resources spent and gained by each action in the action list. Valid as of IdleLoops v.84/Omsi6.
 // @author       Koviko <koviko.net@gmail.com>
 // @match        *omsi6.github.io/loops/*
 // @grant        none
@@ -775,7 +775,7 @@ const Koviko = {
             }
 
             // Calculate time spent
-            let temp = (currentMana - state.resources.mana) / Math.sqrt(1 + getSkillLevel("Chronomancy") / 200);
+            let temp = (currentMana - state.resources.mana) / Math.pow(1 + getSkillLevel("Chronomancy") / 60, 0.25);
             if ( state.resources.town === 0 && getBuffLevel("Ritual") > 0) {
               temp /= (1 + Math.min(getBuffLevel("Ritual"), 20) / 10);
             }
