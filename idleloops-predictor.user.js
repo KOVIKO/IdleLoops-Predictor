@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         IdleLoops Predictor SerVamP
 // @namespace    https://github.com/SerVamP/
-// @version      1.6.2
+// @version      1.6.3
 // @description  Predicts the amount of resources spent and gained by each action in the action list. Valid as of IdleLoops v.84/Omsi6.
 // @author       Koviko <koviko.net@gmail.com>
 // @match        *omsi6.github.io/loops/*
@@ -508,16 +508,7 @@ const Koviko = {
         'Warrior Lessons': { effect: (r, k) => k.combat += 100 },
         'Mage Lessons': { effect: (r, k) => k.magic += 100 * (1 + g.getSkillLevelFromExp(k.alchemy) / 100) },
         'Buy Supplies': { affected: ['gold'], effect: (r) => (r.gold -= 300 - Math.max((r.supplyDiscount || 0) * 20, 0), r.supplies = (r.supplies || 0) + 1) },
-        'Haggle': { affected: ['rep'], canStart: (input) => {
-            if ( input.rep > 0 ) {
-              return true;
-            }
-            return false;
-        }, effect: (r) => {
-          if ( r.rep > 0 ) {
-            (r.rep--, r.supplyDiscount = (r.supplyDiscount >= 15 ? 15 : (r.supplyDiscount || 0) + 1))
-          }
-        }},
+        'Haggle': { affected: ['rep'], canStart: (input) => (input.rep > 0), effect: (r) => (r.rep--, r.supplyDiscount = (r.supplyDiscount >= 15 ? 15 : (r.supplyDiscount || 0) + 1)) },
         'Start Journey': { effect: (r) => (r.supplies = (r.supplies || 0) - 1, r.town += 1) },
 
         // Forest Path
@@ -538,44 +529,30 @@ const Koviko = {
         'Old Shortcut': {},
         'Talk To Hermit': {},
         'Practical Magic': { effect: (r, k) => k.practical += 100 },
-        'Learn Alchemy': { affected: ['herbs'], effect: (r, k) => {
-          if ( r.herbs >= 10 ) {
-            (r.herbs -= 10, k.alchemy += 50, k.magic += 50)
-          }
-        }},
-        'Brew Potions': { affected: ['herbs', 'potions'], effect: (r, k) => {
-          if ( r.herbs >= 10 ) {
-            (r.herbs -= 10, r.potions++, k.alchemy += 25, k.magic += 50)
-          }
-        }},
+        'Learn Alchemy': { affected: ['herbs'], canStart: (input) => (input.herbs >= 10), effect: (r, k) => (r.herbs -= 10, k.alchemy += 50, k.magic += 50) },
+        'Brew Potions': { affected: ['herbs', 'potions'], canStart: (input) => (input.herbs >= 10 && input.rep >= 5), effect: (r, k) => (r.herbs -= 10, r.potions++, k.alchemy += 25, k.magic += 50) },
         'Train Dex': {},
         'Train Speed': {},
         'Follow Flowers': {},
         'Bird Watching': {},
         'Clear Thicket': {},
         'Talk To Witch': {},
-        'Dark Magic': { affected: ['rep'], effect: (r, k) => (r.rep--, k.dark += Math.floor(100 * (1 + buffs.Ritual.amt / 100))) },
+        'Dark Magic': { affected: ['rep'], canStart: (input) => (input.rep <= 0), effect: (r, k) => (r.rep--, k.dark += Math.floor(100 * (1 + buffs.Ritual.amt / 100))) },
         'Continue On': { effect: (r) => r.town += 1 },
 
         // Merchanton
         'Explore City': {},
-        'Gamble': { affected: ['gold', 'rep'], effect: (r) => {
-          if ( r.rep >= -5 ) {
-            r.temp8 = (r.temp8 || 0) + 1;
-            r.gold += r.temp8 <= towns[2].goodGamble ? 40 : 0;
-            r.rep -= r.temp8 <= towns[2].goodGamble ? 1 : 0;
-          }
+        'Gamble': { affected: ['gold', 'rep'], canStart: (input) => (input.rep >= -5), effect: (r) => {
+          r.temp8 = (r.temp8 || 0) + 1;
+          r.gold += r.temp8 <= towns[2].goodGamble ? 40 : 0;
+          r.rep--;
         }},
-        'Get Drunk': { affected: ['rep'], effect: (r) => {
-          if ( r.rep >= -3 ) {
-            r.rep--
-          }
-        }},
+        'Get Drunk': { affected: ['rep'], canStart: (input) => (input.rep >= -3), effect: (r) => r.rep-- },
         'Purchase Mana': { affected: ['mana', 'gold'], effect: (r) => (r.mana += r.gold * 50, r.gold = 0) },
         'Sell Potions': { affected: ['gold', 'potions'], effect: (r, k) => (r.gold += r.potions * g.getSkillLevelFromExp(k.alchemy), r.potions = 0) },
         'Read Books': {},
         'Gather Team': { affected: ['gold'], effect: (r) => (r.team = (r.team || 0) + 1, r.gold -= r.team * 200) },
-        'Craft Armor': { affected: ['hide'], effect: (r) => (r.hide -= 2, r.armor = (r.armor || 0) + 1) },
+        'Craft Armor': { affected: ['hide'], canStart: (input) => (input.hide >= 2), effect: (r) => (r.hide -= 2, r.armor = (r.armor || 0) + 1) },
         'Apprentice': { effect: (r, k) => (r.apprentice = (r.apprentice || 0) + 30 * h.getGuildRankBonus(r.crafts || 0), k.crafting += 10 * (1 + h.getTownLevelFromExp(r.apprentice) / 100)) },
         'Mason': { effect: (r, k) => (r.mason = (r.mason || 0) + 20 * h.getGuildRankBonus(r.crafts || 0), k.crafting += 20 * (1 + h.getTownLevelFromExp(r.mason) / 100)) },
         'Architect': { effect: (r, k) => (r.architect = (r.architect || 0) + 10 * h.getGuildRankBonus(r.crafts || 0), k.crafting += 40 * (1 + h.getTownLevelFromExp(r.architect) / 100)) },
@@ -604,12 +581,12 @@ const Koviko = {
         'Face Judgement': { effect: (r) => r.town += 1 },
 
         // Loops without Max
-        'Heal The Sick': { affected: ['rep'], loop: {
+        'Heal The Sick': { affected: ['rep'], canStart: (input) => (input.rep >= 1), loop: {
           cost: (p, a) => segment => g.fibonacci(2 + Math.floor((p.completed + segment) / a.segments + .0000001)) * 5000,
           tick: (p, a, s, k) => offset => g.getSkillLevelFromExp(k.magic) * Math.sqrt(1 + p.total / 100) * (1 + g.getLevelFromExp(s[a.loopStats[(p.completed + offset) % a.loopStats.length]]) / 100),
           effect: { loop: (r) => r.rep += 3 },
         }},
-        'Fight Monsters': { affected: ['gold'], loop: {
+        'Fight Monsters': { affected: ['gold'], canStart: (input) => (input.rep >= 2), loop: {
           cost: (p, a) => segment => g.fibonacci(Math.floor((p.completed + segment) - p.completed / a.segments + .0000001)) * 10000,
           tick: (p, a, s, k, r) => offset => h.getSelfCombat(r, k) * Math.sqrt(1 + p.total / 100) * (1 + g.getLevelFromExp(s[a.loopStats[(p.completed + offset) % a.loopStats.length]]) / 100),
           effect: { segment: (r) => r.gold += 20 },
@@ -651,7 +628,7 @@ const Koviko = {
           },
           effect: { loop: (r) => r.soul += 10 }
         }},
-        'Dark Ritual': { affected: ['ritual'], loop: {
+        'Dark Ritual': { affected: ['ritual'], canStart: (input) => (input.rep <= -5), loop: {
           max: () => 1,
           cost: (p) => segment => 1000000 * (segment * 2 + 1),
           tick: (p, a, s, k) => offset => {
