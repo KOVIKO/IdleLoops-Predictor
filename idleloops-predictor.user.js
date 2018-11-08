@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         IdleLoops Predictor SerVamP
 // @namespace    https://github.com/SerVamP/
-// @version      1.6.3
-// @description  Predicts the amount of resources spent and gained by each action in the action list. Valid as of IdleLoops v.84/Omsi6.
+// @version      1.7.0
+// @description  Predicts the amount of resources spent and gained by each action in the action list. Valid as of IdleLoops v.85/Omsi6.
 // @author       Koviko <koviko.net@gmail.com>
 // @match        *omsi6.github.io/loops/*
 // @grant        none
@@ -388,6 +388,8 @@ const Koviko = {
       ul.koviko .crafts{color:#777777}
       ul.koviko .adventures{color:#191919}
       ul.koviko .ritual{color:#ff1493}
+      ul.koviko .artifacts{color:#ffd700}
+      ul.koviko .mind{color:#006400}
       `;
 
       // Create the <style> element if it doesn't already exist
@@ -450,7 +452,7 @@ const Koviko = {
          * @return {number} Current bonus from guild rank
          * @memberof Koviko.Predictor#helpers
          */
-        getGuildRankBonus: (guild) => Math.floor(guild / 3 + .00001) >= 14 ? Math.floor(10 + (45 ** 2) / 30) : g.precision3(1 + guild / 20 + (guild ** 2) / 300),
+        getGuildRankBonus: (guild) => Math.floor(guild / 3 + .00001) >= 14 ? Math.floor(1 + 2.25 + (45 ** 2) / 300) : g.precision3(1 + guild / 20 + (guild ** 2) / 300),
 
         /**
          * Calculate the combat skill specifically affecting the team leader
@@ -459,7 +461,7 @@ const Koviko = {
          * @return {number} Combat skill of the team leader
          * @memberof Koviko.Predictor#helpers
          */
-        getSelfCombat: (r, k) => (g.getSkillLevelFromExp(k.combat) + g.getSkillLevelFromExp(k.pyromancy) * 10) * (1 + ((r.armor || 0) * h.getGuildRankBonus(r.crafts || 0)) / 5),
+        getSelfCombat: (r, k) => (g.getSkillLevelFromExp(k.combat) + g.getSkillLevelFromExp(k.pyromancy) * 5) * (1 + ((r.armor || 0) * h.getGuildRankBonus(r.crafts || 0)) / 5),
 
         /**
          * Calculate the combat skill of the entire team
@@ -578,8 +580,16 @@ const Koviko = {
             (r.herbs -= 200, r.lpoitons++, k.alchemy += 100)
           }
         }},
+        'Check Walls': {},
+        'Take Artifacts': { affected: ['artifacts'], effect: (r) => {
+          r.temp11 = (r.temp11 || 0) + 1;
+          r.artifacts += r.temp11 <= towns[3].goodArtifacts ? 1 : 0;
+        }},
         'Face Judgement': { effect: (r) => r.town += 1 },
 
+        // Town 5
+        'Fall From Grace': {},
+        
         // Loops without Max
         'Heal The Sick': { affected: ['rep'], canStart: (input) => (input.rep >= 1), loop: {
           cost: (p, a) => segment => g.fibonacci(2 + Math.floor((p.completed + segment) / a.segments + .0000001)) * 5000,
@@ -637,6 +647,16 @@ const Koviko = {
             return attempt < 1 ? (g.getSkillLevelFromExp(k.dark) * (1 + g.getLevelFromExp(s[a.loopStats[(p.completed + offset) % a.loopStats.length]]) / 100)) / (1 - towns[1].getLevel("Witch") * .005) : 0;
           },
           effect: { loop: (r) => r.ritual++ }
+        }},
+        'Imbue Mind': { affected: ['mind'], loop: {
+          max: () => 1,
+          cost: (p) => segment => 100000000 * (segment * 5 + 1),
+          tick: (p, a, s, k) => offset => {
+            let attempt = Math.floor(p.completed / a.segments + .0000001);
+            
+            return attempt < 1 ? (g.getSkillLevelFromExp(k.magic) * (1 + g.getLevelFromExp(s[a.loopStats[(p.completed + offset) % a.loopStats.length]]) / 100)) : 0;
+          },
+          effect: { loop: (r) => r.mind++ },
         }},
       };
 
