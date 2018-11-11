@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         IdleLoops Predictor SerVamP
 // @namespace    https://github.com/SerVamP/
-// @version      1.7.0
+// @version      1.7.1
 // @description  Predicts the amount of resources spent and gained by each action in the action list. Valid as of IdleLoops v.85/Omsi6.
 // @author       Koviko <koviko.net@gmail.com>
 // @match        *omsi6.github.io/loops/*
@@ -896,9 +896,11 @@ const Koviko = {
         }
       }
 
-      return `<ul class='koviko ${isValid}'>` +
-        affected.map(name => `<li class=${name}>${resources[name]}</li>`).join('') +
-        `</ul><div class='koviko showthis'><table>${tooltip || '<b>N/A</b>'}</table></div>`;
+      var Affec = affected.map(name => {
+        if ( resources[name] != 0 ) return `<li class=${name}>${resources[name]}</li>`;
+        else return "";
+      }).join('');
+      return `<ul class='koviko ${isValid}'>` + Affec + `</ul><div class='koviko showthis'><table>${tooltip || '<b>N/A</b>'}</table></div>`;
     };
 
     /**
