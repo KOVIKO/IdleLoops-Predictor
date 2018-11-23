@@ -589,7 +589,7 @@ const Koviko = {
 
         // Town 5
         'Fall From Grace': {},
-        
+
         // Loops without Max
         'Heal The Sick': { affected: ['rep'], canStart: (input) => (input.rep >= 1), loop: {
           cost: (p, a) => segment => g.fibonacci(2 + Math.floor((p.completed + segment) / a.segments + .0000001)) * 5000,
