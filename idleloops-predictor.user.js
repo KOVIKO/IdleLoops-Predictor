@@ -594,12 +594,12 @@ const Koviko = {
         'Heal The Sick': { affected: ['rep'], canStart: (input) => (input.rep >= 1), loop: {
           cost: (p, a) => segment => g.fibonacci(2 + Math.floor((p.completed + segment) / a.segments + .0000001)) * 5000,
           tick: (p, a, s, k) => offset => g.getSkillLevelFromExp(k.magic) * Math.sqrt(1 + p.total / 100) * (1 + g.getLevelFromExp(s[a.loopStats[(p.completed + offset) % a.loopStats.length]]) / 100),
-          effect: { loop: (r) => r.rep += 3 },
+          effect: { end: (r, k) => k.magic += 10, loop: (r) => r.rep += 3 },
         }},
         'Fight Monsters': { affected: ['gold'], canStart: (input) => (input.rep >= 2), loop: {
           cost: (p, a) => segment => g.fibonacci(Math.floor((p.completed + segment) - p.completed / a.segments + .0000001)) * 10000,
           tick: (p, a, s, k, r) => offset => h.getSelfCombat(r, k) * Math.sqrt(1 + p.total / 100) * (1 + g.getLevelFromExp(s[a.loopStats[(p.completed + offset) % a.loopStats.length]]) / 100),
-          effect: { segment: (r) => r.gold += 20 },
+          effect: { end: (r, k) => k.combat += 10, segment: (r) => r.gold += 20 },
         }},
         'Adventure Guild': { affected: ['gold', 'adventures'], loop: {
           cost: (p) => segment => g.precision3(Math.pow(1.2, p.completed + segment)) * 5e6,
@@ -626,7 +626,7 @@ const Koviko = {
 
             return floor in g.dungeons[a.dungeonNum] ? (h.getSelfCombat(r, k) + g.getSkillLevelFromExp(k.magic)) * (1 + g.getLevelFromExp(s[a.loopStats[(p.completed + offset) % a.loopStats.length]]) / 100) * Math.sqrt(1 + g.dungeons[a.dungeonNum][floor].completed / 200) : 0;
           },
-          effect: { loop: (r) => r.soul++ },
+          effect: { end: (r, k) => (k.combat += 5, k.magic += 5), loop: (r) => r.soul++ },
         }},
         'Large Dungeon': { affected: ['soul'], loop: {
           max: (a) => g.dungeons[a.dungeonNum].length,
@@ -636,7 +636,7 @@ const Koviko = {
 
             return floor in g.dungeons[a.dungeonNum] ? (h.getTeamCombat(r, k) + g.getSkillLevelFromExp(k.magic)) * (1 + g.getLevelFromExp(s[a.loopStats[(p.completed + offset) % a.loopStats.length]]) / 100) * Math.sqrt(1 + g.dungeons[a.dungeonNum][floor].completed / 200) : 0;
           },
-          effect: { loop: (r) => r.soul += 10 }
+          effect: { end: (r, k) => (k.combat += 15, k.magic += 15), loop: (r) => r.soul += 10 }
         }},
         'Dark Ritual': { affected: ['ritual'], canStart: (input) => (input.rep <= -5), loop: {
           max: () => 1,
@@ -653,7 +653,7 @@ const Koviko = {
           cost: (p) => segment => 100000000 * (segment * 5 + 1),
           tick: (p, a, s, k) => offset => {
             let attempt = Math.floor(p.completed / a.segments + .0000001);
-            
+
             return attempt < 1 ? (g.getSkillLevelFromExp(k.magic) * (1 + g.getLevelFromExp(s[a.loopStats[(p.completed + offset) % a.loopStats.length]]) / 100)) : 0;
           },
           effect: { loop: (r) => r.mind++ },
@@ -797,6 +797,11 @@ const Koviko = {
             // Run the effect, now that the mana checks are complete
             if (prediction.effect) {
               prediction.effect(state.resources, state.skills);
+            }
+            if (prediction.loop) {
+              if (prediction.loop.effect.end) {
+                prediction.loop.effect.end(state.resources, state.skills);
+              }
             }
           }
 
