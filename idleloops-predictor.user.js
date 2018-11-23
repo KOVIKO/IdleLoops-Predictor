@@ -536,7 +536,7 @@ const Koviko = {
         'Train Dex': {},
         'Train Speed': {},
         'Follow Flowers': {},
-        'Bird Watching': {},
+        'Bird Watching': {canStart: (input) => input.glasses},
         'Clear Thicket': {},
         'Talk To Witch': {},
         'Dark Magic': { affected: ['rep'], canStart: (input) => (input.rep <= 0), effect: (r, k) => (r.rep--, k.dark += Math.floor(100 * (1 + buffs.Ritual.amt / 100))) },
