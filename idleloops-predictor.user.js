@@ -558,12 +558,12 @@ const Koviko = {
         'Apprentice': { effect: (r, k) => (r.apprentice = (r.apprentice || 0) + 30 * h.getGuildRankBonus(r.crafts || 0), k.crafting += 10 * (1 + h.getTownLevelFromExp(r.apprentice) / 100)) },
         'Mason': { effect: (r, k) => (r.mason = (r.mason || 0) + 20 * h.getGuildRankBonus(r.crafts || 0), k.crafting += 20 * (1 + h.getTownLevelFromExp(r.mason) / 100)) },
         'Architect': { effect: (r, k) => (r.architect = (r.architect || 0) + 10 * h.getGuildRankBonus(r.crafts || 0), k.crafting += 40 * (1 + h.getTownLevelFromExp(r.architect) / 100)) },
-        'Buy Pickaxe': { affected: ['gold'], effect: (r) => r.gold -= 200 },
+        'Buy Pickaxe': { affected: ['gold'], effect: (r) => (r.gold -= 200, r.pickaxe = true) },
         'Start Trek': { effect: (r) => r.town += 1 },
 
         // Mt. Olympus
         'Climb Mountain': {},
-        'Mana Geyser': { affected: ['mana'], effect: (r) => {
+        'Mana Geyser': { affected: ['mana'], canStart: (input) => input.pickaxe, effect: (r) => {
           r.temp9 = (r.temp9 || 0) + 1;
           r.mana += r.temp9 <= towns[3].goodGeysers ? 5000 : 0;
         }},
