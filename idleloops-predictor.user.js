@@ -708,6 +708,12 @@ const Koviko = {
        */
       let total = 0;
 
+        /**
+        * Manna from adventure guild
+        * @var {number}
+        */
+       let deltaAdventure = 0;
+
       /**
        * Total time used for the action list
        * @var {number}
@@ -770,19 +776,15 @@ const Koviko = {
 
             // Only for Adventure Guild
             if ( listedAction.name == "Adventure Guild" ) {
-              state.resources.mana -= state.resources.adventures * 200;
-            }
+              deltaAdventure = state.resources.adventures * 200;
+            } else deltaAdventure = 0;
 
             // Calculate the total amount of mana used in the prediction and add it to the total
             total += currentMana - state.resources.mana;
 
-            // Only for Adventure Guild
-            if ( listedAction.name == "Adventure Guild" ) {
-              state.resources.mana += state.resources.adventures * 200;
-            }
 
             // Calculate time spent
-            let temp = (currentMana - state.resources.mana) / Math.pow(1 + getSkillLevel("Chronomancy") / 60, 0.25);
+            let temp = (currentMana - state.resources.mana + deltaAdventure) / Math.pow(1 + getSkillLevel("Chronomancy") / 60, 0.25);
             if ( state.resources.town === 0 && getBuffLevel("Ritual") > 0) {
               temp /= (1 + Math.min(getBuffLevel("Ritual"), 20) / 10);
             }
